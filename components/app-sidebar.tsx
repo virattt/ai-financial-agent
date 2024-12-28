@@ -23,6 +23,10 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <Sidebar className="group-data-[side=left]:border-r-0 bg-sidebar">
       <SidebarHeader>
