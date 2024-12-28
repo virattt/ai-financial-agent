@@ -9,7 +9,7 @@ interface TickerSuggestionsProps {
   selectedIndex?: number;
 }
 
-function PureTickerSuggestions({ 
+export function TickerSuggestions({ 
   suggestions, 
   onSelect, 
   position,
@@ -47,5 +47,3 @@ function PureTickerSuggestions({
     </div>
   );
 }
-
-export const TickerSuggestions = memo(PureTickerSuggestions); 
