@@ -26,7 +26,7 @@ export const authConfig = {
 
       if (isOnChat) {
         if (isLoggedIn) return true;
-        return true; // TODO (virat) - return false and redirect to login page when auth is implemented
+        return false;
       }
 
       if (isLoggedIn) {
