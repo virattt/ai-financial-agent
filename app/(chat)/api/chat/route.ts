@@ -39,7 +39,8 @@ type AllowedTools =
   | 'createDocument'
   | 'updateDocument'
   | 'requestSuggestions'
-  | 'getWeather';
+  | 'getWeather'
+  | 'getLatestPrice';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
@@ -49,7 +50,9 @@ const blocksTools: AllowedTools[] = [
 
 const weatherTools: AllowedTools[] = ['getWeather'];
 
-const allTools: AllowedTools[] = [...blocksTools, ...weatherTools];
+const financialDatasetsTools: AllowedTools[] = ['getLatestPrice'];
+
+const allTools: AllowedTools[] = [...blocksTools, ...weatherTools, ...financialDatasetsTools];
 
 export async function POST(request: Request) {
   const {
@@ -120,6 +123,19 @@ export async function POST(request: Request) {
 
               const weatherData = await response.json();
               return weatherData;
+            },
+          },
+          getLatestPrice: {
+            description: 'Get the latest price of a stock',
+            parameters: z.object({
+              ticker: z.string(),
+            }),
+            execute: async ({ ticker }) => {
+              const response = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`,
+              );
+
+              const data = await response.json();
+              return data;
             },
           },
           createDocument: {
