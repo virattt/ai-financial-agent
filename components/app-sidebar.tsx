@@ -17,15 +17,10 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { ThemeToggle } from './sidebar-toggle';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0 bg-sidebar">
