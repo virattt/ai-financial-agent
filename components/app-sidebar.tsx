@@ -35,7 +35,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               }}
               className="flex flex-row gap-3 items-center"
             >
-              <span className="text-[#2383F4] text-lg font-semibold px-2 rounded-md cursor-pointer">
+              <span className="text-[#2383F4] text-xl font-semibold px-2 rounded-md cursor-pointer">
                 financial datasets
               </span>
             </Link>
@@ -62,10 +62,9 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
-      <div className="flex items-center px-4 py-2">
-        <ThemeToggle />
-      </div>
+      <SidebarFooter>
+        {user && <SidebarUserNav user={user} />}
+      </SidebarFooter>
     </Sidebar>
   );
 }
