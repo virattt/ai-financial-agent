@@ -13,6 +13,7 @@ import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
+import { StockPrice } from './stock-price';
 import equal from 'fast-deep-equal';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -136,6 +137,8 @@ const PurePreviewMessage = ({
                       <div key={toolCallId}>
                         {toolName === 'getWeather' ? (
                           <Weather weatherAtLocation={result} />
+                        ) : toolName === 'getLatestPrice' ? (
+                          <StockPrice stockData={result} />
                         ) : toolName === 'createDocument' ? (
                           <DocumentPreview
                             isReadonly={isReadonly}
@@ -163,11 +166,13 @@ const PurePreviewMessage = ({
                     <div
                       key={toolCallId}
                       className={cx({
-                        skeleton: ['getWeather'].includes(toolName),
+                        skeleton: ['getWeather', 'getLatestPrice'].includes(toolName),
                       })}
                     >
                       {toolName === 'getWeather' ? (
                         <Weather />
+                      ) : toolName === 'getLatestPrice' ? (
+                        <StockPrice />
                       ) : toolName === 'createDocument' ? (
                         <DocumentPreview isReadonly={isReadonly} args={args} />
                       ) : toolName === 'updateDocument' ? (
