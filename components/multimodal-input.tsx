@@ -29,6 +29,9 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
+import { TickerSuggestions } from './ticker-suggestions';
+
+const TICKER_SUGGESTIONS = ['AAPL', 'GOOGL', 'MSFT', 'NVDA', 'TSLA'];
 
 function PureMultimodalInput({
   chatId,
@@ -102,9 +105,54 @@ function PureMultimodalInput({
     setLocalStorageInput(input);
   }, [input, setLocalStorageInput]);
 
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(event.target.value);
+    const newValue = event.target.value;
+    setInput(newValue);
     adjustHeight();
+
+    // Handle ticker suggestions
+    const lastAtIndex = newValue.lastIndexOf('@');
+    if (lastAtIndex !== -1) {
+      const textAfterAt = newValue.slice(lastAtIndex + 1);
+      const match = textAfterAt.match(/^[A-Za-z]*$/);
+      
+      if (match) {
+        setShowTickerSuggestions(true);
+        setTickerFilter(textAfterAt);
+        setSelectedIndex(0); // Reset selection when filter changes
+        
+        // Calculate menu position
+        const textarea = textareaRef.current;
+        if (textarea) {
+          const textBeforeCursor = newValue.slice(0, textarea.selectionStart);
+          const span = document.createElement('span');
+          span.style.font = window.getComputedStyle(textarea).font;
+          span.style.visibility = 'hidden';
+          span.style.position = 'absolute';
+          span.textContent = textBeforeCursor;
+          document.body.appendChild(span);
+          
+          const rect = textarea.getBoundingClientRect();
+          const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
+          const lines = textBeforeCursor.split('\n');
+          const currentLineNumber = lines.length - 1;
+          
+          setMenuPosition({
+            // Position the menu above the cursor
+            top: rect.top + window.scrollY + (currentLineNumber * lineHeight) - 8,
+            left: rect.left + span.offsetWidth - textBeforeCursor.length * 2,
+          });
+          
+          document.body.removeChild(span);
+        }
+      } else {
+        setShowTickerSuggestions(false);
+      }
+    } else {
+      setShowTickerSuggestions(false);
+    }
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -185,6 +233,61 @@ function PureMultimodalInput({
     [setAttachments],
   );
 
+  const [showTickerSuggestions, setShowTickerSuggestions] = useState(false);
+  const [tickerFilter, setTickerFilter] = useState('');
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
+
+  const handleTickerSelect = (ticker: string) => {
+    const parts = input.split('@');
+    const newInput = parts.slice(0, -1).join('@') + ticker + ' ';
+    setInput(newInput);
+    setShowTickerSuggestions(false);
+    setTickerFilter('');
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  const filteredSuggestions = TICKER_SUGGESTIONS.filter(ticker => 
+    ticker.toLowerCase().startsWith(tickerFilter.toLowerCase())
+  );
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (showTickerSuggestions && filteredSuggestions.length > 0) {
+      switch (event.key) {
+        case 'ArrowUp':
+          event.preventDefault();
+          setSelectedIndex((prev) => 
+            prev > 0 ? prev - 1 : filteredSuggestions.length - 1
+          );
+          break;
+        case 'ArrowDown':
+          event.preventDefault();
+          setSelectedIndex((prev) => 
+            prev < filteredSuggestions.length - 1 ? prev + 1 : 0
+          );
+          break;
+        case 'Enter':
+          if (!event.shiftKey) {
+            event.preventDefault();
+            handleTickerSelect(filteredSuggestions[selectedIndex]);
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          setShowTickerSuggestions(false);
+          break;
+      }
+    } else if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      if (isLoading) {
+        toast.error('Please wait for the model to finish its response!');
+      } else {
+        submitForm();
+      }
+    }
+  };
+
   return (
     <div className="relative w-full flex flex-col gap-4">
       {messages.length === 0 &&
@@ -222,28 +325,27 @@ function PureMultimodalInput({
         </div>
       )}
 
+      {showTickerSuggestions && (
+        <TickerSuggestions
+          suggestions={filteredSuggestions}
+          onSelect={handleTickerSelect}
+          position={menuPosition}
+          selectedIndex={selectedIndex}
+        />
+      )}
+
       <Textarea
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder="Send a message...type @ to include tickers"
         value={input}
         onChange={handleInput}
+        onKeyDown={handleKeyDown}
         className={cx(
           'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
           className,
         )}
         rows={2}
         autoFocus
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-
-            if (isLoading) {
-              toast.error('Please wait for the model to finish its response!');
-            } else {
-              submitForm();
-            }
-          }
-        }}
       />
 
       <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
