@@ -33,7 +33,7 @@ import {
 
 import { generateTitleFromUserMessage } from '../../actions';
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 type AllowedTools =
   | 'createDocument'
