@@ -9,21 +9,56 @@ interface ExtendedSession extends Session {
   user: User;
 }
 
-// Helper to generate a unique user ID from browser fingerprint
-async function generateUserIdFromRequest() {
-  const headersList = await headers();
-  const userAgent = headersList.get('user-agent') || '';
-  const forwarded = headersList.get('x-forwarded-for') || '';
+import crypto from 'crypto';
+
+// Utility to create a random fingerprint
+function createFingerprint(): string {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+interface FingerprintResult {
+  fingerprint: string;
+  autoEmail: string;
+}
+
+/**
+ * Reads `fingerprint` from existing cookies (if any),
+ * otherwise generates a new one and instructs the
+ * server to set a new cookie in the response.
+ */
+export function getOrSetFingerprint(request: any): FingerprintResult {
+  // 1. Read incoming cookies from request headers
+  const cookies = request.headers.cookie || '';
   
-  // Create a unique fingerprint from user agent and IP
-  const fingerprint = createHash(userAgent + forwarded);
-    
-  // Create a deterministic email from the fingerprint
+  // 2. Parse out the fingerprint cookie if it exists
+  const fingerprintMatch = cookies
+    .split(';')
+    .find((cookie: string) => cookie.trim().startsWith('fingerprint='));
+
+  let fingerprint: string;
+
+  if (fingerprintMatch) {
+    fingerprint = fingerprintMatch.split('=')[1].trim();
+  } else {
+    // 3. Generate new fingerprint
+    fingerprint = createFingerprint();
+
+    // // 4. Set the new cookie (with an expiration, secure, httpOnly, etc.)
+    // //    In a real environment, you'd typically want a few days or weeks. 
+    // //    For demonstration, let's do 30 days.
+    // const maxAge = 30 * 24 * 60 * 60; // 30 days in seconds
+    // response.setHeader(
+    //   'Set-Cookie',
+    //   `fingerprint=${fingerprint}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=${maxAge}`
+    // );
+  }
+
+  // 5. Create a deterministic “email” from the fingerprint
   const autoEmail = `user-${fingerprint.slice(0, 12)}@auto.generated`;
-  
+
   return {
     fingerprint,
-    autoEmail
+    autoEmail,
   };
 }
 
@@ -45,8 +80,9 @@ export const {
   providers: [
     Credentials({
       credentials: {},
-      async authorize() {
-        const { fingerprint, autoEmail } = await generateUserIdFromRequest();
+      async authorize(credentials, req) {
+        const response = new Response();
+        const { fingerprint, autoEmail } = await getOrSetFingerprint(req);
 
         // Try to find existing user
         const users = await getUser(autoEmail);
