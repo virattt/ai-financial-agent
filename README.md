@@ -1,6 +1,9 @@
 # AI Financial Agent
 This is a proof of conncept AI financial agent built with the AI SDK by Vercel and Financial Datasets API.  The goal of this project is to explore the use of AI for investment research.  This project is for **educational** purposes only and is not intended for real trading or investment.
 
+![Screenshot 2024-12-29 at 2 15 00 PM](https://github.com/user-attachments/assets/c91c67f8-e827-49cc-8813-ac5063443f36)
+
+
 ## Disclaimer
 
 This project is for **educational and research purposes only**.
