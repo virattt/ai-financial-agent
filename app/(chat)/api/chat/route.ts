@@ -427,7 +427,7 @@ export async function POST(request: Request) {
           },
         },
         onFinish: async ({ response }) => {
-          // CAUTION: this is a hack to prevent stream from being cut off
+          // CAUTION: this is a hack to prevent stream from being cut off :(
           // TODO: find a better solution
           await new Promise((resolve) => setTimeout(resolve, 1000));
 
