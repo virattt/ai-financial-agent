@@ -33,7 +33,8 @@ import {
 
 import { generateTitleFromUserMessage } from '../../actions';
 
-export const maxDuration = 120;
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 type AllowedTools =
   | 'createDocument'
@@ -426,6 +427,11 @@ export async function POST(request: Request) {
           },
         },
         onFinish: async ({ response }) => {
+          // CAUTION: this is a hack to prevent stream from being cut off
+          // TODO: find a better solution
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // save the response
           if (session.user?.id) {
             try {
               const responseMessagesWithoutIncompleteToolCalls =
