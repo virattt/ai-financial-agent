@@ -20,14 +20,9 @@ export const login = async (
   formData: FormData,
 ): Promise<LoginActionState> => {
   try {
-    const validatedData = authFormSchema.parse({
+    await signIn('credentials', {
       email: formData.get('email'),
       password: formData.get('password'),
-    });
-
-    await signIn('credentials', {
-      email: validatedData.email,
-      password: validatedData.password,
       redirect: false,
     });
 

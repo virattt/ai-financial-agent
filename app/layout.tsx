@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
+import { AuthCheck } from '@/app/components/AuthCheck';
 
 import { ThemeProvider } from '@/components/providers';
+import { SessionProvider } from 'next-auth/react';
 
 import './globals.css';
 
@@ -35,7 +37,7 @@ const THEME_COLOR_SCRIPT = `\
   updateThemeColor();
 })();`;
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -61,15 +63,18 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Toaster position="top-center" />
-          {children}
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AuthCheck />
+            <Toaster position="top-center" />
+            {children}
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );
