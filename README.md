@@ -62,7 +62,7 @@ Your app template should now be running on [localhost:3000](http://localhost:300
 
 This template uses the [Financial Datasets API](https://financialdatasets.ai) as the financial data provider.  The Financial Datasets API is specifically designed for AI financial agents and LLMs.
 
-The API provides real-time and historical stock market data and covers 100% of the US market over the past 30 years.  Data includes financial statements, stock prices, options data, insider trades, and much more.  You can learn more about the API via the documentation [here](https://docs.financialdatasets.ai).
+The Financial Datasets API provides real-time and historical stock market data and covers 100% of the US market over the past 30 years.  Data includes financial statements, stock prices, options data, insider trades, and much more.  You can learn more about the API via the documentation [here](https://docs.financialdatasets.ai).
 
 > Note: Data is free for AAPL, GOOGL, MSFT, NVDA, and TSLA.
 
