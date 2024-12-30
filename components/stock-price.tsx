@@ -4,13 +4,15 @@ import cx from 'classnames';
 import { format } from 'date-fns';
 
 interface StockSnapshot {
-  snapshot: {
+  snapshot?: {
     ticker: string;
     price: number;
     day_change: number;
     day_change_percent: number;
     time: string;
   };
+  error?: string;
+  message?: string;
 }
 
 const SAMPLE: StockSnapshot = {
@@ -28,6 +30,28 @@ export function StockPrice({
 }: {
   stockData?: StockSnapshot;
 }) {
+  // If there's an error, display error message
+  if (stockData.error) {
+    return (
+      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-800 max-w-[500px]">
+        <div className="text-red-400 text-sm">
+          {stockData.message || 'An error occurred while fetching stock data'}
+        </div>
+      </div>
+    );
+  }
+
+  // Ensure snapshot exists before destructuring
+  if (!stockData.snapshot) {
+    return (
+      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-800 max-w-[500px]">
+        <div className="text-slate-400 text-sm">
+          No stock data available
+        </div>
+      </div>
+    );
+  }
+
   const { ticker, price, day_change, day_change_percent, time } = stockData.snapshot;
   const isPositive = day_change >= 0;
 
