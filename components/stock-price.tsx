@@ -33,7 +33,7 @@ export function StockPrice({
   // If there's an error, display error message
   if (stockData.error) {
     return (
-      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-800 max-w-[500px]">
+      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
         <div className="text-red-400 text-sm">
           {stockData.message || 'An error occurred while fetching stock data'}
         </div>
@@ -44,7 +44,7 @@ export function StockPrice({
   // Ensure snapshot exists before destructuring
   if (!stockData.snapshot) {
     return (
-      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-800 max-w-[500px]">
+      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
         <div className="text-slate-400 text-sm">
           No stock data available
         </div>
@@ -56,11 +56,11 @@ export function StockPrice({
   const isPositive = day_change >= 0;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-800 max-w-[500px]">
+    <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
       <div className="flex flex-row justify-between items-center">
         <div className="flex flex-row gap-4 items-center">
-          <div className="text-2xl font-bold text-slate-100">{ticker}</div>
-          <div className="text-3xl font-medium text-slate-100">
+          <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{ticker}</div>
+          <div className="text-3xl font-medium text-slate-900 dark:text-slate-100">
             ${price.toFixed(2)}
           </div>
         </div>
