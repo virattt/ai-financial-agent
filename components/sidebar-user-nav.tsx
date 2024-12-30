@@ -28,7 +28,7 @@ export function SidebarUserNav({ user }: { user: User }) {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent bg-sidebar data-[state=open]:text-sidebar-accent-foreground h-10 hover:bg-background" >
+              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent bg-sidebar data-[state=open]:text-sidebar-accent-foreground h-10 hover:bg-background border-t border-border" >
                 <Settings className="size-4 mr-2" />
                 <span className="truncate">Settings</span>
                 <ChevronUp className="ml-auto" />
