@@ -1,5 +1,5 @@
 'use client';
-import { ChevronUp, Settings } from 'lucide-react';
+import { ChevronUp, Settings, Sun, Moon, Key } from 'lucide-react';
 import type { User } from 'next-auth';
 import { useTheme } from 'next-themes';
 import { useState } from 'react';
@@ -28,7 +28,7 @@ export function SidebarUserNav({ user }: { user: User }) {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent bg-sidebar data-[state=open]:text-sidebar-accent-foreground h-10 hover:bg-background">
+              <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent bg-sidebar data-[state=open]:text-sidebar-accent-foreground h-10 hover:bg-background" >
                 <Settings className="size-4 mr-2" />
                 <span className="truncate">Settings</span>
                 <ChevronUp className="ml-auto" />
@@ -42,15 +42,21 @@ export function SidebarUserNav({ user }: { user: User }) {
                 className="cursor-pointer"
                 onSelect={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               >
+                {theme === 'light' ? (
+                  <Moon className="mr-2 size-4" />
+                ) : (
+                  <Sun className="mr-2 size-4" />
+                )}
                 {`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <button
                   type="button"
-                  className="w-full cursor-pointer"
+                  className="w-full cursor-pointer flex items-center"
                   onClick={() => setIsApiKeysModalOpen(true)}
                 >
+                  <Key className="mr-2 size-4" />
                   Configure API keys
                 </button>
               </DropdownMenuItem>
