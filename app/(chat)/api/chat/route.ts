@@ -32,6 +32,7 @@ import {
 } from '@/lib/utils';
 
 import { generateTitleFromUserMessage } from '../../actions';
+import { getFinancialDatasetsApiKey } from '@/lib/db/api-keys';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -132,8 +133,11 @@ export async function POST(request: Request) {
               ticker: z.string(),
             }),
             execute: async ({ ticker }) => {
-              const response = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`,
-              );
+              const response = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`, {
+                headers: {
+                  'X-API-Key': `${getFinancialDatasetsApiKey()}`
+                }
+              });
 
               const data = await response.json();
               return data;

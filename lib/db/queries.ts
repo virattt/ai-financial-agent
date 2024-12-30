@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { and, asc, desc, eq, gt, gte } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, gte, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -122,6 +122,32 @@ export async function getMessagesByChatId({ id }: { id: string }) {
       .orderBy(asc(message.createdAt));
   } catch (error) {
     console.error('Failed to get messages by chat id from database', error);
+    throw error;
+  }
+}
+
+export async function getTotalUserMessagesByUserId({ userId }: { userId: string | undefined }) {
+  if (!userId) {
+    return 0;
+  }
+
+  try {
+    const [result] = await db
+      .select({
+        count: sql<number>`count(*)::int`,
+      })
+      .from(message)
+      .innerJoin(chat, eq(message.chatId, chat.id))
+      .where(
+        and(
+          eq(chat.userId, userId),
+          eq(message.role, 'user')
+        )
+      );
+
+    return result?.count ?? 0;
+  } catch (error) {
+    console.error('Failed to get total messages by user from database');
     throw error;
   }
 }
