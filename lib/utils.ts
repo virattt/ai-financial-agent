@@ -38,14 +38,26 @@ export const fetcher = async (url: string) => {
 
 export function getLocalStorage(key: string) {
   if (typeof window !== 'undefined') {
-    return JSON.parse(localStorage.getItem(key) || '[]');
+    const item = localStorage.getItem(key);
+    if (!item) return null;
+    try {
+      return JSON.parse(item);
+    } catch {
+      return item; // If it's not JSON, return the raw string
+    }
   }
-  return [];
+  return null;
 }
 
 export function setLocalStorage(key: string, value: any) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      const valueToStore = typeof value === 'string' ? value : JSON.stringify(value);
+      localStorage.setItem(key, valueToStore);
+      console.log(`Successfully stored ${key}:`, value);
+    } catch (error) {
+      console.error(`Error storing ${key}:`, error);
+    }
   }
 }
 

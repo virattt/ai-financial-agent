@@ -8,6 +8,7 @@ import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
 import { fetcher } from '@/lib/utils';
+import { getFinancialDatasetsApiKey } from '@/lib/db/api-keys';
 
 import { Block } from './block';
 import { MultimodalInput } from './multimodal-input';
@@ -29,6 +30,7 @@ export function Chat({
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
+  const financialDatasetsApiKey = getFinancialDatasetsApiKey();
 
   const {
     messages,
@@ -42,7 +44,11 @@ export function Chat({
     reload,
   } = useChat({
     id,
-    body: { id, modelId: selectedModelId },
+    body: { 
+      id, 
+      modelId: selectedModelId,
+      financialDatasetsApiKey
+    },
     initialMessages,
     experimental_throttle: 100,
     onFinish: () => {
