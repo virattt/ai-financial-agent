@@ -6,29 +6,65 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff } from 'lucide-react';
 import { getOpenAIApiKey, setOpenAIApiKey, getFinancialDatasetsApiKey, setFinancialDatasetsApiKey } from '@/lib/db/api-keys';
+import { validateOpenAIKey } from '@/lib/utils/api-key-validation';
+
 
 interface ApiKeysModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  title?: string;
+  description?: string;
 }
 
-export function ApiKeysModal({ open, onOpenChange }: ApiKeysModalProps) {
+export function ApiKeysModal({ 
+  open, 
+  onOpenChange, 
+  title = "Configure API keys",
+  description 
+}: ApiKeysModalProps) {
   const [openAIKey, setOpenAIKey] = useState(getOpenAIApiKey() || '');
   const [financialKey, setFinancialKey] = useState(getFinancialDatasetsApiKey() || '');
   const [showOpenAIKey, setShowOpenAIKey] = useState(false);
   const [showFinancialKey, setShowFinancialKey] = useState(false);
+  const [openAIError, setOpenAIError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
-    await setOpenAIApiKey(openAIKey);
-    await setFinancialDatasetsApiKey(financialKey);
-    onOpenChange(false);
+    try {
+      setIsLoading(true);
+      setOpenAIError('');
+
+      const { isValid, error } = await validateOpenAIKey(openAIKey);
+      
+      if (!isValid) {
+        setOpenAIError(error ?? 'Invalid OpenAI API key');
+        return;
+      }
+
+      await Promise.all([
+        setOpenAIApiKey(openAIKey),
+        setFinancialDatasetsApiKey(financialKey)
+      ]);
+
+      onOpenChange(false);
+    } catch (error) {
+      setOpenAIError('An unexpected error occurred. Please try again.');
+      console.error('Error saving API keys:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Configure API keys</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
+          {description && (
+            <p className="text-sm text-muted-foreground">
+              {description}
+            </p>
+          )}
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
@@ -51,6 +87,11 @@ export function ApiKeysModal({ open, onOpenChange }: ApiKeysModalProps) {
                 {showOpenAIKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            {openAIError && (
+              <p className="text-sm text-red-500 mt-1">
+                {openAIError}
+              </p>
+            )}
             <p className="text-xs text-muted-foreground">
               Get your API key from{' '}
               <a 
@@ -97,7 +138,9 @@ export function ApiKeysModal({ open, onOpenChange }: ApiKeysModalProps) {
           </div>
         </div>
         <div className="flex justify-end">
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave} disabled={isLoading}>
+            {isLoading ? 'Saving...' : 'Save'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
