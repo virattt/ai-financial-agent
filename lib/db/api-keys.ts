@@ -29,3 +29,8 @@ export const setFinancialDatasetsApiKey = async (apiKey: string) => {
   if (typeof window === 'undefined') return;
   setLocalStorage('financialDatasetsApiKey', apiKey);
 };
+
+export const getLocalOpenAIApiKey = () => {
+  if (typeof window === 'undefined') return null;
+  return getLocalStorage('openaiApiKey');
+};
