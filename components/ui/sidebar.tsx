@@ -67,6 +67,10 @@ const SidebarProvider = React.forwardRef<
     },
     ref,
   ) => {
+    React.useEffect(() => {
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=true; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+    }, []);
+
     const isMobile = useIsMobile();
     const [openMobile, setOpenMobile] = React.useState(false);
 
