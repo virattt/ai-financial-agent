@@ -21,19 +21,19 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       action: 'What is the latest price of Apple?',
     },
     {
-      title: 'What is the latest price',
-      label: 'of Tesla?',
-      action: 'What is the latest price of Tesla?',
+      title: 'Show me the revenue',
+      label: 'of Microsoft over the last 5 years',
+      action: 'Show Microsoft\'s annual revenue for the last 5 years',
     },
     {
-      title: 'What is the latest price',
-      label: 'of Google?',
-      action: 'What is the latest price of Google?',
+      title: 'How has Tesla\'s balance sheet changed',
+      label: 'over the last 4 quarters?',
+      action: 'How has Tesla\'s balance sheet changed over the last 4 quarters?',
     },
     {
-      title: 'What is the latest price',
-      label: 'of Nvidia?',
-      action: 'What is the latest price of Nvidia?',
+      title: 'What is the P/E ratio',
+      label: 'of Nvidia over the last 3 years?',
+      action: 'What is the P/E ratio of Nvidia over the last 3 years?',
     },
   ];
 
@@ -52,7 +52,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
             variant="ghost"
             onClick={async () => {
               window.history.replaceState({}, '', `/chat/${chatId}`);
-
               append({
                 role: 'user',
                 content: suggestedAction.action,

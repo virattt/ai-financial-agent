@@ -20,6 +20,7 @@ import { Button } from './ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
+import { FinancialsTable } from './financials-table';
 
 const PurePreviewMessage = ({
   chatId,
@@ -139,6 +140,26 @@ const PurePreviewMessage = ({
                           <Weather weatherAtLocation={result} />
                         ) : toolName === 'getLatestPrice' ? (
                           <StockPrice stockData={result} />
+                        ) : toolName === 'getIncomeStatements' ? (
+                          <FinancialsTable 
+                            data={result.income_statements} 
+                            title="Income Statement"
+                          />
+                        ) : toolName === 'getBalanceSheets' ? (
+                          <FinancialsTable 
+                            data={result.balance_sheets} 
+                            title="Balance Sheet"
+                          />
+                        ) : toolName === 'getCashFlowStatements' ? (
+                          <FinancialsTable 
+                            data={result.cash_flow_statements} 
+                            title="Cash Flow Statement"
+                          />
+                        ) : toolName === 'getFinancialMetrics' ? (
+                          <FinancialsTable 
+                            data={result.financial_metrics} 
+                            title="Financial Metrics"
+                          />
                         ) : toolName === 'createDocument' ? (
                           <DocumentPreview
                             isReadonly={isReadonly}
@@ -173,6 +194,14 @@ const PurePreviewMessage = ({
                         <Weather />
                       ) : toolName === 'getLatestPrice' ? (
                         <StockPrice />
+                      ) : toolName === 'getIncomeStatements' ? (
+                        <FinancialsTable data={args.data} />
+                      ) : toolName === 'getBalanceSheets' ? (
+                        <FinancialsTable data={args.data} />
+                      ) : toolName === 'getCashFlowStatements' ? (
+                        <FinancialsTable data={args.data} />
+                      ) : toolName === 'getFinancialMetrics' ? (
+                        <FinancialsTable data={args.data} />
                       ) : toolName === 'createDocument' ? (
                         <DocumentPreview isReadonly={isReadonly} args={args} />
                       ) : toolName === 'updateDocument' ? (

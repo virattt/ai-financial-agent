@@ -41,7 +41,11 @@ type AllowedTools =
   | 'updateDocument'
   | 'requestSuggestions'
   | 'getWeather'
-  | 'getLatestPrice';
+  | 'getLatestPrice'
+  | 'getIncomeStatements'
+  | 'getBalanceSheets'
+  | 'getCashFlowStatements'
+  | 'getFinancialMetrics';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
@@ -51,7 +55,7 @@ const blocksTools: AllowedTools[] = [
 
 const weatherTools: AllowedTools[] = ['getWeather'];
 
-const financialDatasetsTools: AllowedTools[] = ['getLatestPrice'];
+const financialDatasetsTools: AllowedTools[] = ['getLatestPrice', 'getIncomeStatements', 'getBalanceSheets', 'getCashFlowStatements', 'getFinancialMetrics'];
 
 const allTools: AllowedTools[] = [...blocksTools, ...weatherTools, ...financialDatasetsTools];
 
@@ -109,7 +113,7 @@ export async function POST(request: Request) {
         model: customModel(model.apiIdentifier),
         system: systemPrompt,
         messages: coreMessages,
-        maxSteps: 5,
+        maxSteps: 10,
         experimental_activeTools: allTools,
         tools: {
           getWeather: {
@@ -130,7 +134,7 @@ export async function POST(request: Request) {
           getLatestPrice: {
             description: 'Get the latest price of a stock',
             parameters: z.object({
-              ticker: z.string(),
+              ticker: z.string().describe('The ticker of the company to get the latest price for'),
             }),
             execute: async ({ ticker }) => {
               const response = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`, {
@@ -139,6 +143,103 @@ export async function POST(request: Request) {
                 }
               });
 
+              const data = await response.json();
+              return data;
+            },
+          },
+          getIncomeStatements: {
+            description: 'Get the income statements of a company',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get income statements for'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the income statements to return'),
+              limit: z.number().optional().default(1).describe('The number of income statements to return'),
+              report_period_lte: z.string().optional().describe('The less than or equal to date of the income statements to return.  This lets us bound the data by date.'),
+              report_period_gte: z.string().optional().describe('The greater than or equal to date of the income statements to return.  This lets us bound the data by date.'),
+            }),
+            execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
+              
+              if (limit) params.append('limit', limit.toString());
+              if (report_period_lte) params.append('report_period_lte', report_period_lte);
+              if (report_period_gte) params.append('report_period_gte', report_period_gte);
+
+              const response = await fetch(`https://api.financialdatasets.ai/financials/income-statements/?${params}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
+              const data = await response.json();
+              return data;
+            },
+          },
+          getBalanceSheets: {
+            description: 'Get the balance sheets of a company',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get balance sheets for'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the balance sheets to return'),
+              limit: z.number().optional().default(1).describe('The number of balance sheets to return'),
+              report_period_lte: z.string().optional().describe('The less than or equal to date of the balance sheets to return.  This lets us bound the data by date.'),
+              report_period_gte: z.string().optional().describe('The greater than or equal to date of the balance sheets to return.  This lets us bound the data by date.'),
+            }),
+            execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
+              if (limit) params.append('limit', limit.toString());
+              if (report_period_lte) params.append('report_period_lte', report_period_lte);
+              if (report_period_gte) params.append('report_period_gte', report_period_gte);
+
+              const response = await fetch(`https://api.financialdatasets.ai/financials/balance-sheets/?${params}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
+              const data = await response.json();
+              return data;
+            },
+          },
+          getCashFlowStatements: {
+            description: 'Get the cash flow statements of a company',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get cash flow statements for'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the cash flow statements to return'),
+              limit: z.number().optional().default(1).describe('The number of cash flow statements to return'),
+              report_period_lte: z.string().optional().describe('The less than or equal to date of the cash flow statements to return.  This lets us bound the data by date.'),
+              report_period_gte: z.string().optional().describe('The greater than or equal to date of the cash flow statements to return.  This lets us bound the data by date.'),
+            }),
+            execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
+              if (limit) params.append('limit', limit.toString());
+              if (report_period_lte) params.append('report_period_lte', report_period_lte);
+              if (report_period_gte) params.append('report_period_gte', report_period_gte);
+
+              const response = await fetch(`https://api.financialdatasets.ai/financials/cash-flow-statements/?${params}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
+              const data = await response.json();
+              return data;
+            },
+          },
+          getFinancialMetrics: {
+            description: 'Get the financial metrics of a company',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get financial metrics for'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the financial metrics to return'),
+              limit: z.number().optional().default(1).describe('The number of financial metrics to return'),
+              report_period_lte: z.string().optional().describe('The less than or equal to date of the financial metrics to return.  This lets us bound the data by date.'),
+              report_period_gte: z.string().optional().describe('The greater than or equal to date of the financial metrics to return.  This lets us bound the data by date.'),
+            }),
+            execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
+              if (limit) params.append('limit', limit.toString());
+              if (report_period_lte) params.append('report_period_lte', report_period_lte);
+              if (report_period_gte) params.append('report_period_gte', report_period_gte);
+
+              const response = await fetch(`https://api.financialdatasets.ai/financial-metrics/?${params}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
               const data = await response.json();
               return data;
             },
