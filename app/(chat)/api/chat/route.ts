@@ -32,6 +32,7 @@ import {
 } from '@/lib/utils';
 
 import { generateTitleFromUserMessage } from '../../actions';
+import { AISDKExporter } from 'langsmith/vercel';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -115,6 +116,7 @@ export async function POST(request: Request) {
         messages: coreMessages,
         maxSteps: 10,
         experimental_activeTools: allTools,
+        experimental_telemetry: AISDKExporter.getSettings(),
         tools: {
           getWeather: {
             description: 'Get the current weather at a location',
@@ -567,10 +569,6 @@ export async function POST(request: Request) {
               console.error('Failed to save chat');
             }
           }
-        },
-        experimental_telemetry: {
-          isEnabled: true,
-          functionId: 'stream-text',
         },
       });
 
