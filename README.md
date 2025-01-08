@@ -1,7 +1,7 @@
-# AI Financial Agent
+# AI Financial Agent 🤖
 This is a proof of conncept AI financial agent.  The goal of this project is to explore the use of AI for investment research.  This project is for **educational** purposes only and is not intended for real trading or investment.
 
-**Demo**: You can use a live demo of this project <a href="https://chat.financialdatasets.ai/" target="_blank" rel="noopener noreferrer">here</a>.
+👋 **Demo**: You can use a live demo of this project [here](https://chat.financialdatasets.ai/).
 
 <img width="1709" alt="Screenshot 2025-01-06 at 5 53 59 PM" src="https://github.com/user-attachments/assets/7ef1729b-f2e1-477c-99e2-1184c1bfa1cd" />
 
@@ -17,14 +17,14 @@ This project is for **educational and research purposes only**.
 
 By using this software, you agree to use it solely for learning purposes.
 
-## Table of Contents
+## Table of Contents 📖
 - [Features](#features)
 - [Setup](#setup)
 - [Usage](#usage)
 - [Financial Data](#financial-data)
 - [Deploy Your Own](#deploy-your-own)
 
-## Features
+## Features 🌟
 - [AI SDK](https://sdk.vercel.ai/docs)
   - Unified API for generating text, structured objects, and tool calls with LLMs
   - Hooks for building dynamic chat and generative user interfaces
@@ -39,7 +39,7 @@ By using this software, you agree to use it solely for learning purposes.
   - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
 
 
-## Setup
+## Setup 🛠️
 
 ```bash
 git clone https://github.com/virattt/ai-financial-agent.git
@@ -85,7 +85,7 @@ If you want to deploy your own version of the AI Financial Agent in production, 
 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
 3. Download your environment variables: `vercel env pull`
 
-## Usage
+## Usage 🎮
 
 After completing the steps above, simply run the following command to start the development server:
 ```bash
@@ -106,7 +106,7 @@ Data includes financial statements, stock prices, options data, insider trades, 
 
 If you do not want to use the Financial Datasets API, you can easily switch to another data provider by modifying a few lines of code.
 
-## Deploy Your Own
+## Deploy Your Own 🚀
 
 You can deploy your own version of the AI Financial Agent in production via Vercel with one click:
 
