@@ -39,19 +39,54 @@ By using this software, you agree to use it solely for learning purposes.
 
 ## Setup
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run the AI Financial Agent. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+```bash
+git clone https://github.com/virattt/ai-financial-agent.git
+cd ai-financial-agent
+```
+
+> If you do not have npm installed, please install it from [here](https://nodejs.org/en/download/).
+
+1. Install pnpm (if not already installed):
+```bash
+npm install -g pnpm
+```
+
+2. Install dependencies:
+```bash
+pnpm install
+```
+
+3. Set up your environment variables:
+```bash
+# Create .env file for your API keys
+cp .env.example .env
+```
+
+Set the API keys in the .env file:
+```
+# Get your OpenAI API key from https://platform.openai.com/
+OPENAI_API_KEY=your-openai-api-key
+
+# Get your Financial Datasets API key from https://financialdatasets.ai/
+FINANCIAL_DATASETS_API_KEY=your-financial-datasets-api-key
+
+# Get your LangSmith API key from https://smith.langchain.com/
+LANGCHAIN_API_KEY=your-langsmith-api-key
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_PROJECT=ai-financial-agent
+```
 
 > Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
+If you want to deploy your own version of the AI Financial Agent in production, you need to link your local instance with your Vercel and GitHub accounts.
 1. Install Vercel CLI: `npm i -g vercel`
 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
 3. Download your environment variables: `vercel env pull`
 
-
 ## Usage
 
+After completing the steps above, simply run the following command to start the development server:
 ```bash
-pnpm install
 pnpm dev
 ```
 
