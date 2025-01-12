@@ -222,6 +222,30 @@ export async function POST(request: Request) {
               return data;
             },
           },
+          getAllFinancialStatements: {
+            description: 'Get all financial statements of a company',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get all financial statements for'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the financial statements to return'),
+              limit: z.number().optional().default(1).describe('The number of financial statements to return'),
+              report_period_lte: z.string().optional().describe('The less than or equal to date of the financial statements to return.  This lets us bound the data by date.'),
+              report_period_gte: z.string().optional().describe('The greater than or equal to date of the financial statements to return.  This lets us bound the data by date.'),
+            }),
+            execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
+              if (limit) params.append('limit', limit.toString());
+              if (report_period_lte) params.append('report_period_lte', report_period_lte);
+              if (report_period_gte) params.append('report_period_gte', report_period_gte);
+
+              const response = await fetch(`https://api.financialdatasets.ai/financials/?${params}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
+              const data = await response.json();
+              return data;
+            },
+          },
           getFinancialMetrics: {
             description: 'Get the financial metrics of a company',
             parameters: z.object({
