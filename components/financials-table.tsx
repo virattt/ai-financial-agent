@@ -9,7 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cx } from 'class-variance-authority';
 
 interface FinancialData {
@@ -72,14 +71,11 @@ export function FinancialsTable({
 
   return (
     <div className="border rounded-lg">
-      <div 
-        className="max-h-[400px] overflow-auto"
-        onScroll={(e) => e.stopPropagation()}
-      >
+      <div className="max-h-[400px] overflow-auto">
         <Table>
-          <TableHeader className="sticky top-0 bg-muted z-10">
-            <TableRow>
-              <TableHead className="w-[300px] min-w-[300px] font-bold border-r whitespace-nowrap">
+          <TableHeader className="sticky top-0">
+            <TableRow className="bg-muted z-10">
+              <TableHead className="w-[300px] min-w-[300px] font-bold border-r whitespace-nowrap bg-muted left-0">
                 {title ? `${title} (${formatPeriod(data[0].period)})` : formatPeriod(data[0].period)}
               </TableHead>
               {data.map((period, index) => (

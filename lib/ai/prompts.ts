@@ -30,9 +30,9 @@ Do not update document right after creating it. Wait for user feedback or reques
 `;
 
 export const regularPrompt =
-  'You are a friendly assistant! Keep your responses concise and helpful.';
+  `You are a friendly financial assistant. Keep your responses concise and helpful.  Do not ever return code, markdown, tables, lists, or any other UI text in your responses.  The current date is ${new Date().toLocaleDateString()}.`;
 
-export const systemPrompt = `${regularPrompt}\n\n${blocksPrompt}`;
+export const systemPrompt = `${regularPrompt}`;
 
 export const codePrompt = `
 You are a Python code generator that creates self-contained, executable code snippets. When writing code:

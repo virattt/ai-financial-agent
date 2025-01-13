@@ -3,11 +3,11 @@
 import type { ChatRequestOptions, Message } from 'ai';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 
 import type { Vote } from '@/lib/db/schema';
 
-import { DocumentToolCall, DocumentToolResult } from './document';
+import { DocumentToolResult } from './document';
 import { PencilEditIcon, SparklesIcon } from './icons';
 import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
@@ -21,6 +21,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { FinancialsTable } from './financials-table';
+import { StockChart } from './ui/stock-chart';
 
 const PurePreviewMessage = ({
   chatId,
@@ -138,8 +139,10 @@ const PurePreviewMessage = ({
                       <div key={toolCallId}>
                         {toolName === 'getWeather' ? (
                           <Weather weatherAtLocation={result} />
-                        ) : toolName === 'getLatestPrice' ? (
+                        ) : toolName === 'getCurrentStockPrice' ? (
                           <StockPrice stockData={result} />
+                        ) : toolName === 'getStockPrices' ? (
+                          <StockChart ticker={result.ticker} prices={result.prices} />
                         ) : toolName === 'getIncomeStatements' ? (
                           <FinancialsTable 
                             data={result.income_statements} 
@@ -184,40 +187,7 @@ const PurePreviewMessage = ({
                     );
                   }
                   return (
-                    <div
-                      key={toolCallId}
-                      className={cx({
-                        skeleton: ['getWeather', 'getLatestPrice'].includes(toolName),
-                      })}
-                    >
-                      {toolName === 'getWeather' ? (
-                        <Weather />
-                      ) : toolName === 'getLatestPrice' ? (
-                        <StockPrice />
-                      ) : toolName === 'getIncomeStatements' ? (
-                        <FinancialsTable data={args.data} />
-                      ) : toolName === 'getBalanceSheets' ? (
-                        <FinancialsTable data={args.data} />
-                      ) : toolName === 'getCashFlowStatements' ? (
-                        <FinancialsTable data={args.data} />
-                      ) : toolName === 'getFinancialMetrics' ? (
-                        <FinancialsTable data={args.data} />
-                      ) : toolName === 'createDocument' ? (
-                        <DocumentPreview isReadonly={isReadonly} args={args} />
-                      ) : toolName === 'updateDocument' ? (
-                        <DocumentToolCall
-                          type="update"
-                          args={args}
-                          isReadonly={isReadonly}
-                        />
-                      ) : toolName === 'requestSuggestions' ? (
-                        <DocumentToolCall
-                          type="request-suggestions"
-                          args={args}
-                          isReadonly={isReadonly}
-                        />
-                      ) : null}
-                    </div>
+                    <div key={toolCallId}/>
                   );
                 })}
               </div>

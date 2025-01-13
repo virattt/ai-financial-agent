@@ -35,7 +35,7 @@ function PureMessages({
 
   return (
     <div
-      ref={messagesContainerRef}
+      // ref={messagesContainerRef} this is causing the scroll to bottom to be too aggressive
       className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
     >
       {/* {messages.length === 0 && <Overview />} */}

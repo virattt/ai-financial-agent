@@ -42,7 +42,8 @@ type AllowedTools =
   | 'updateDocument'
   | 'requestSuggestions'
   | 'getWeather'
-  | 'getLatestPrice'
+  | 'getCurrentStockPrice'
+  | 'getStockPrices'
   | 'getIncomeStatements'
   | 'getBalanceSheets'
   | 'getCashFlowStatements'
@@ -56,7 +57,14 @@ const blocksTools: AllowedTools[] = [
 
 const weatherTools: AllowedTools[] = ['getWeather'];
 
-const financialDatasetsTools: AllowedTools[] = ['getLatestPrice', 'getIncomeStatements', 'getBalanceSheets', 'getCashFlowStatements', 'getFinancialMetrics'];
+const financialDatasetsTools: AllowedTools[] = [
+  'getCurrentStockPrice',
+  'getStockPrices',
+  'getIncomeStatements',
+  'getBalanceSheets',
+  'getCashFlowStatements',
+  'getFinancialMetrics',
+];
 
 const allTools: AllowedTools[] = [...blocksTools, ...weatherTools, ...financialDatasetsTools];
 
@@ -67,7 +75,7 @@ export async function POST(request: Request) {
     modelId,
     financialDatasetsApiKey,
   }: { id: string; messages: Array<Message>; modelId: string; financialDatasetsApiKey?: string } =
-  await request.json();
+    await request.json();
 
   const session = await auth();
 
@@ -133,8 +141,8 @@ export async function POST(request: Request) {
               return weatherData;
             },
           },
-          getLatestPrice: {
-            description: 'Get the latest price of a stock',
+          getCurrentStockPrice: {
+            description: 'Use this tool to get the current price snapshot of a stock only',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get the latest price for'),
             }),
@@ -145,6 +153,32 @@ export async function POST(request: Request) {
                 }
               });
 
+              const data = await response.json();
+              return data;
+            },
+          },
+          getStockPrices: {
+            description: 'Use this tool to get stock prices for a company over a time period',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get historical prices for'),
+              start_date: z.string().describe('The start date for historical prices (YYYY-MM-DD)'),
+              end_date: z.string().describe('The end date for historical prices (YYYY-MM-DD)'),
+              interval: z.enum(['second', 'minute', 'day', 'week', 'month', 'year']).default('day').describe('The interval between price points (e.g. second, minute, day, week, month, year)'),
+              interval_multiplier: z.number().default(1).describe('The multiplier for the interval (e.g. 1 for second, 60 for minute, 1 for day, 7 for week, 1 for month, 1 for year)'),
+            }),
+            execute: async ({ ticker, start_date, end_date, interval, interval_multiplier, limit }) => {
+              const params = new URLSearchParams({ 
+                ticker, 
+                start_date, 
+                end_date,
+                interval,
+                interval_multiplier,
+              });
+              const response = await fetch(`https://api.financialdatasets.ai/prices/?${params}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
               const data = await response.json();
               return data;
             },
@@ -214,30 +248,6 @@ export async function POST(request: Request) {
               if (report_period_gte) params.append('report_period_gte', report_period_gte);
 
               const response = await fetch(`https://api.financialdatasets.ai/financials/cash-flow-statements/?${params}`, {
-                headers: {
-                  'X-API-Key': `${financialDatasetsApiKey}`
-                }
-              });
-              const data = await response.json();
-              return data;
-            },
-          },
-          getAllFinancialStatements: {
-            description: 'Get all financial statements of a company',
-            parameters: z.object({
-              ticker: z.string().describe('The ticker of the company to get all financial statements for'),
-              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the financial statements to return'),
-              limit: z.number().optional().default(1).describe('The number of financial statements to return'),
-              report_period_lte: z.string().optional().describe('The less than or equal to date of the financial statements to return.  This lets us bound the data by date.'),
-              report_period_gte: z.string().optional().describe('The greater than or equal to date of the financial statements to return.  This lets us bound the data by date.'),
-            }),
-            execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
-              const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
-              if (limit) params.append('limit', limit.toString());
-              if (report_period_lte) params.append('report_period_lte', report_period_lte);
-              if (report_period_gte) params.append('report_period_gte', report_period_gte);
-
-              const response = await fetch(`https://api.financialdatasets.ai/financials/?${params}`, {
                 headers: {
                   'X-API-Key': `${financialDatasetsApiKey}`
                 }

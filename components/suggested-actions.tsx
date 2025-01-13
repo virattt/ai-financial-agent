@@ -26,14 +26,14 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       action: 'Show Microsoft\'s annual revenue for the last 5 years',
     },
     {
-      title: 'How has Tesla\'s balance sheet changed',
-      label: 'over the last 4 quarters?',
-      action: 'How has Tesla\'s balance sheet changed over the last 4 quarters?',
+      title: 'How has Nvidia\'s price',
+      label: 'changed over the past year?',
+      action: 'How has Nvidia\'s price changed over the past year?',
     },
     {
       title: 'What is the P/E ratio',
-      label: 'of Nvidia over the last 3 years?',
-      action: 'What is the P/E ratio of Nvidia over the last 3 years?',
+      label: 'of Tesla over the last 3 years?',
+      action: 'What is the P/E ratio of Tesla over the last 3 years?',
     },
   ];
 
