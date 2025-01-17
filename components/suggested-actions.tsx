@@ -31,9 +31,9 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       action: 'How has Nvidia\'s price changed over the past year?',
     },
     {
-      title: 'What is the P/E ratio',
-      label: 'of Tesla over the last 3 years?',
-      action: 'What is the P/E ratio of Tesla over the last 3 years?',
+      title: 'Show me 5 stocks with',
+      label: 'revenue > 100B and net income > 10B',
+      action: 'Show me 5 stocks with revenue > 100B and net income > 10B',
     },
   ];
 

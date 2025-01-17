@@ -33,6 +33,7 @@ import {
 
 import { generateTitleFromUserMessage } from '../../actions';
 import { AISDKExporter } from 'langsmith/vercel';
+import { validStockSearchFilters } from '@/lib/api/stock-filters';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -47,7 +48,8 @@ type AllowedTools =
   | 'getIncomeStatements'
   | 'getBalanceSheets'
   | 'getCashFlowStatements'
-  | 'getFinancialMetrics';
+  | 'getFinancialMetrics'
+  | 'searchStocksByFilters';
 
 const blocksTools: AllowedTools[] = [
   'createDocument',
@@ -64,6 +66,7 @@ const financialDatasetsTools: AllowedTools[] = [
   'getBalanceSheets',
   'getCashFlowStatements',
   'getFinancialMetrics',
+  'searchStocksByFilters',
 ];
 
 const allTools: AllowedTools[] = [...blocksTools, ...weatherTools, ...financialDatasetsTools];
@@ -122,7 +125,7 @@ export async function POST(request: Request) {
         model: customModel(model.apiIdentifier),
         system: systemPrompt,
         messages: coreMessages,
-        maxSteps: 10,
+        maxSteps: 2,
         experimental_activeTools: allTools,
         experimental_telemetry: AISDKExporter.getSettings(),
         tools: {
@@ -167,9 +170,9 @@ export async function POST(request: Request) {
               interval_multiplier: z.number().default(1).describe('The multiplier for the interval (e.g. 1 for second, 60 for minute, 1 for day, 7 for week, 1 for month, 1 for year)'),
             }),
             execute: async ({ ticker, start_date, end_date, interval, interval_multiplier, limit }) => {
-              const params = new URLSearchParams({ 
-                ticker, 
-                start_date, 
+              const params = new URLSearchParams({
+                ticker,
+                start_date,
                 end_date,
                 interval,
                 interval_multiplier,
@@ -194,7 +197,7 @@ export async function POST(request: Request) {
             }),
             execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
               const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
-              
+
               if (limit) params.append('limit', limit.toString());
               if (report_period_lte) params.append('report_period_lte', report_period_lte);
               if (report_period_gte) params.append('report_period_gte', report_period_gte);
@@ -270,12 +273,55 @@ export async function POST(request: Request) {
               if (limit) params.append('limit', limit.toString());
               if (report_period_lte) params.append('report_period_lte', report_period_lte);
               if (report_period_gte) params.append('report_period_gte', report_period_gte);
-
               const response = await fetch(`https://api.financialdatasets.ai/financial-metrics/?${params}`, {
                 headers: {
                   'X-API-Key': `${financialDatasetsApiKey}`
                 }
               });
+              const data = await response.json();
+              return data;
+            },
+          },
+          searchStocksByFilters: {
+            description: 'Search for stocks based on financial criteria. Use this tool when asked to find or screen stocks based on financial metrics like revenue, net income, debt, etc. Examples: "stocks with revenue > 50B", "companies with positive net income", "find stocks with low debt". The tool supports comparing metrics like revenue, net_income, total_debt, total_assets, etc. with values using greater than (gt), less than (lt), equal to (eq), and their inclusive variants (gte, lte).',
+            parameters: z.object({
+              filters: z.array(
+                z.object({
+                  field: z.enum(validStockSearchFilters as [string, ...string[]]),
+                  operator: z.enum(['gt', 'gte', 'lt', 'lte', 'eq']),
+                  value: z.number()
+                })
+              ).describe('The filters to search for (e.g. [{field: "net_income", operator: "gt", value: 1000000000}, {field: "revenue", operator: "gt", value: 50000000000}])'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).optional().describe('The period of the financial metrics to return'),
+              limit: z.number().optional().default(5).describe('The number of stocks to return'),
+              order_by: z.enum(['-report_period', 'report_period']).optional().default('-report_period').describe('The order of the stocks to return'),
+            }),
+            execute: async ({ filters, period, limit }) => {
+              const body = {
+                filters,
+                period: period ?? 'ttm',
+                limit: limit ?? 5,
+              };
+              
+              const response = await fetch('https://api.financialdatasets.ai/financials/search/', {
+                method: 'POST',
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+              });
+              
+              if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error:', {
+                  status: response.status,
+                  statusText: response.statusText,
+                  body: errorText
+                });
+                throw new Error(`API error: ${response.status} ${errorText}`);
+              }
+
               const data = await response.json();
               return data;
             },
@@ -575,32 +621,36 @@ export async function POST(request: Request) {
           // save the response
           if (session.user?.id) {
             try {
-              const responseMessagesWithoutIncompleteToolCalls =
-                sanitizeResponseMessages(response.messages);
+              const responseMessagesWithoutIncompleteToolCalls = sanitizeResponseMessages(response.messages);
+              console.log("response messages in onFinish", responseMessagesWithoutIncompleteToolCalls);
+              
+              if (responseMessagesWithoutIncompleteToolCalls.length > 0) {
+                await saveMessages({
+                  messages: responseMessagesWithoutIncompleteToolCalls.map(
+                    (message) => {
+                      const messageId = generateUUID();
 
-              await saveMessages({
-                messages: responseMessagesWithoutIncompleteToolCalls.map(
-                  (message) => {
-                    const messageId = generateUUID();
+                      if (message.role === 'assistant') {
+                        dataStream.writeMessageAnnotation({
+                          messageIdFromServer: messageId,
+                        });
+                      }
 
-                    if (message.role === 'assistant') {
-                      dataStream.writeMessageAnnotation({
-                        messageIdFromServer: messageId,
-                      });
-                    }
-
-                    return {
-                      id: messageId,
-                      chatId: id,
-                      role: message.role,
-                      content: message.content,
-                      createdAt: new Date(),
-                    };
-                  },
-                ),
-              });
+                      return {
+                        id: messageId,
+                        chatId: id,
+                        role: message.role,
+                        content: message.content,
+                        createdAt: new Date(),
+                      };
+                    },
+                  ),
+                });
+              } else {
+                console.log('No valid messages to save');
+              }
             } catch (error) {
-              console.error('Failed to save chat');
+              console.error('Failed to save chat:', error);
             }
           }
         },

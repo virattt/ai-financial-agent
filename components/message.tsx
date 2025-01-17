@@ -22,6 +22,7 @@ import { MessageEditor } from './message-editor';
 import { DocumentPreview } from './document-preview';
 import { FinancialsTable } from './financials-table';
 import { StockChart } from './ui/stock-chart';
+import { StockScreenerTable } from './stock-screener-table';
 
 const PurePreviewMessage = ({
   chatId,
@@ -162,6 +163,10 @@ const PurePreviewMessage = ({
                           <FinancialsTable 
                             data={result.financial_metrics} 
                             title="Financial Metrics"
+                          />
+                        ) : toolName === 'searchStocksByFilters' ? (
+                          <StockScreenerTable 
+                            data={result.search_results} 
                           />
                         ) : toolName === 'createDocument' ? (
                           <DocumentPreview
