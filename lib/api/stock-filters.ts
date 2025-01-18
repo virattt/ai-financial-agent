@@ -1,5 +1,4 @@
 export const validStockSearchFilters = [
-  "consolidated_income",
   "cost_of_revenue",
   "dividends_per_common_share",
   "earnings_per_share",
