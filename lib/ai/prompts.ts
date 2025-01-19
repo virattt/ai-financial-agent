@@ -30,7 +30,7 @@ Do not update document right after creating it. Wait for user feedback or reques
 `;
 
 export const regularPrompt =
-  `You are a friendly financial assistant. Keep your responses concise and helpful.  Do not ever return code, markdown, tables, lists, or any other UI text in your responses.  The current date is ${new Date().toLocaleDateString()}.`;
+  `You are a friendly financial assistant. Keep your responses concise and helpful.  Do not ever return code, markdown, tables, lists, or any other UI text in your responses.  The current date is ${new Date().toLocaleDateString()}.  When retrieving recent financial data, use ttm as the default period.`;
 
 export const systemPrompt = `${regularPrompt}`;
 
