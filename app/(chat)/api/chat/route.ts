@@ -190,7 +190,7 @@ export async function POST(request: Request) {
             description: 'Get the income statements of a company',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get income statements for'),
-              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the income statements to return'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).default('ttm').describe('The period of the income statements to return'),
               limit: z.number().optional().default(1).describe('The number of income statements to return'),
               report_period_lte: z.string().optional().describe('The less than or equal to date of the income statements to return.  This lets us bound the data by date.'),
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the income statements to return.  This lets us bound the data by date.'),
@@ -215,7 +215,7 @@ export async function POST(request: Request) {
             description: 'Get the balance sheets of a company',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get balance sheets for'),
-              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the balance sheets to return'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).default('ttm').describe('The period of the balance sheets to return'),
               limit: z.number().optional().default(1).describe('The number of balance sheets to return'),
               report_period_lte: z.string().optional().describe('The less than or equal to date of the balance sheets to return.  This lets us bound the data by date.'),
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the balance sheets to return.  This lets us bound the data by date.'),
@@ -239,7 +239,7 @@ export async function POST(request: Request) {
             description: 'Get the cash flow statements of a company',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get cash flow statements for'),
-              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the cash flow statements to return'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).default('ttm').describe('The period of the cash flow statements to return'),
               limit: z.number().optional().default(1).describe('The number of cash flow statements to return'),
               report_period_lte: z.string().optional().describe('The less than or equal to date of the cash flow statements to return.  This lets us bound the data by date.'),
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the cash flow statements to return.  This lets us bound the data by date.'),
@@ -263,7 +263,7 @@ export async function POST(request: Request) {
             description: 'Get the financial metrics of a company',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get financial metrics for'),
-              period: z.enum(['quarterly', 'annual', 'ttm']).describe('The period of the financial metrics to return'),
+              period: z.enum(['quarterly', 'annual', 'ttm']).default('ttm').describe('The period of the financial metrics to return'),
               limit: z.number().optional().default(1).describe('The number of financial metrics to return'),
               report_period_lte: z.string().optional().describe('The less than or equal to date of the financial metrics to return.  This lets us bound the data by date.'),
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the financial metrics to return.  This lets us bound the data by date.'),
