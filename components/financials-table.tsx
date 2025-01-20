@@ -83,7 +83,7 @@ export function FinancialsTable({
         <div className="border rounded-lg">
         <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
         <span>
-              <span className="font-bold">Source:</span>{" "}
+              <span className="font-bold">Retrieved:</span>{" "}
               <span className="text-muted-foreground">{headerTitle}</span>
             </span>
           </AccordionTrigger>
