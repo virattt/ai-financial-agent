@@ -7,7 +7,7 @@ import useSWR, { useSWRConfig } from 'swr';
 
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
-import { fetcher } from '@/lib/utils';
+import { fetcher, track } from '@/lib/utils';
 import { getFinancialDatasetsApiKey, getLocalOpenAIApiKey } from '@/lib/db/api-keys';
 
 import { Block } from './block';
@@ -84,6 +84,9 @@ export function Chat({
         setShowApiKeysModal(true);
         return;
       }
+
+      // Track the message submission
+      track('chat_message_submit');
 
       handleSubmit(event, chatRequestOptions);
     } catch (error) {

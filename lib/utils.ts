@@ -7,6 +7,7 @@ import type {
 } from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { track as vercelTrack } from '@vercel/analytics';
 
 import type { Message as DBMessage, Document } from '@/lib/db/schema';
 
@@ -239,4 +240,8 @@ export function getMessageIdFromAnnotations(message: Message) {
 
   // @ts-expect-error messageIdFromServer is not defined in MessageAnnotation
   return annotation.messageIdFromServer;
+}
+
+export function track(eventName: string, properties?: Record<string, any>) {
+  vercelTrack(eventName, properties);
 }
