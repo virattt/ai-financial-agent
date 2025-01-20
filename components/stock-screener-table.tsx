@@ -120,7 +120,7 @@ export function StockScreenerTable({
         <div className="border rounded-lg">
           <AccordionTrigger className="w-full px-4 py-3 hover:no-underline bg-muted rounded-t-lg">
             <span>
-              <span className="font-bold">Retrieved:</span>{" "}
+              <span className="font-bold">Retrieved data:</span>{" "}
               <span className="text-muted-foreground">Stock Screener Results</span>
             </span>
           </AccordionTrigger>
