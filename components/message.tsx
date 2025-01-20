@@ -64,14 +64,6 @@ const PurePreviewMessage = ({
             },
           )}
         >
-          {message.role === 'assistant' && (
-            <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
-              <div className="translate-y-px">
-                <SparklesIcon size={14} />
-              </div>
-            </div>
-          )}
-
           <div className="flex flex-col gap-2 w-full">
             {message.experimental_attachments && (
               <div className="flex flex-row justify-end gap-2">
@@ -133,14 +125,17 @@ const PurePreviewMessage = ({
                 {message.toolInvocations.map((toolInvocation) => {
                   const { toolName, toolCallId, state, args } = toolInvocation;
 
+                  if (toolName === 'getFinancialMetrics') {
+                    console.log("args", args);
+                    return <div/>
+                  }
+                  
                   if (state === 'result') {
                     const { result } = toolInvocation;
 
                     return (
                       <div key={toolCallId}>
-                        {toolName === 'getWeather' ? (
-                          <Weather weatherAtLocation={result} />
-                        ) : toolName === 'getCurrentStockPrice' ? (
+                        {toolName === 'getCurrentStockPrice' ? (
                           <StockPrice stockData={result} />
                         ) : toolName === 'getStockPrices' ? (
                           <StockChart ticker={result.ticker} prices={result.prices} />
@@ -159,34 +154,12 @@ const PurePreviewMessage = ({
                             data={result.cash_flow_statements} 
                             title="Cash Flow Statement"
                           />
-                        ) : toolName === 'getFinancialMetrics' ? (
-                          <FinancialsTable 
-                            data={result.financial_metrics} 
-                            title="Financial Metrics"
-                          />
                         ) : toolName === 'searchStocksByFilters' ? (
                           <StockScreenerTable 
                             data={result.search_results} 
                           />
-                        ) : toolName === 'createDocument' ? (
-                          <DocumentPreview
-                            isReadonly={isReadonly}
-                            result={result}
-                          />
-                        ) : toolName === 'updateDocument' ? (
-                          <DocumentToolResult
-                            type="update"
-                            result={result}
-                            isReadonly={isReadonly}
-                          />
-                        ) : toolName === 'requestSuggestions' ? (
-                          <DocumentToolResult
-                            type="request-suggestions"
-                            result={result}
-                            isReadonly={isReadonly}
-                          />
                         ) : (
-                          <pre>{JSON.stringify(result, null, 2)}</pre>
+                          <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
                         )}
                       </div>
                     );

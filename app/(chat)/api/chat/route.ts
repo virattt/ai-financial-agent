@@ -102,6 +102,19 @@ export async function POST(request: Request) {
     ],
   });
 
+  // Create a Set to track tool calls
+  const toolCallCache = new Set<string>();
+
+  // Helper function to check and track tool calls
+  const shouldExecuteToolCall = (toolName: string, params: any): boolean => {
+    const key = JSON.stringify({ toolName, params });
+    if (toolCallCache.has(key)) {
+      return false;
+    }
+    toolCallCache.add(key);
+    return true;
+  };
+
   return createDataStreamResponse({
     execute: (dataStream) => {
       dataStream.writeData({
@@ -113,31 +126,21 @@ export async function POST(request: Request) {
         model: customModel(model.apiIdentifier),
         system: systemPrompt,
         messages: coreMessages,
-        maxSteps: 2,
+        maxSteps: 10,
         experimental_activeTools: allTools,
         experimental_telemetry: AISDKExporter.getSettings(),
         tools: {
-          getWeather: {
-            description: 'Get the current weather at a location',
-            parameters: z.object({
-              latitude: z.number(),
-              longitude: z.number(),
-            }),
-            execute: async ({ latitude, longitude }) => {
-              const response = await fetch(
-                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&daily=sunrise,sunset&timezone=auto`,
-              );
-
-              const weatherData = await response.json();
-              return weatherData;
-            },
-          },
           getCurrentStockPrice: {
             description: 'Use this tool to get the current price snapshot of a stock only',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get the latest price for'),
             }),
             execute: async ({ ticker }) => {
+              if (!shouldExecuteToolCall('getCurrentStockPrice', { ticker })) {
+                console.log('Skipping duplicate getCurrentStockPrice call:', { ticker });
+                return null;
+              }
+
               const response = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`, {
                 headers: {
                   'X-API-Key': `${financialDatasetsApiKey}`
@@ -157,15 +160,20 @@ export async function POST(request: Request) {
               interval: z.enum(['second', 'minute', 'day', 'week', 'month', 'year']).default('day').describe('The interval between price points (e.g. second, minute, day, week, month, year)'),
               interval_multiplier: z.number().default(1).describe('The multiplier for the interval (e.g. 1 for second, 60 for minute, 1 for day, 7 for week, 1 for month, 1 for year)'),
             }),
-            execute: async ({ ticker, start_date, end_date, interval, interval_multiplier, limit }) => {
-              const params = new URLSearchParams({
-                ticker,
-                start_date,
-                end_date,
-                interval,
-                interval_multiplier,
+            execute: async ({ ticker, start_date, end_date, interval, interval_multiplier }) => {
+              if (!shouldExecuteToolCall('getStockPrices', { ticker, start_date, end_date, interval, interval_multiplier })) {
+                console.log('Skipping duplicate getStockPrices call:', { ticker, start_date, end_date, interval, interval_multiplier });
+                return null;
+              }
+
+              const urlParams = new URLSearchParams({
+                ticker: ticker,
+                start_date: start_date,
+                end_date: end_date,
+                interval: interval,
+                interval_multiplier: interval_multiplier.toString(),
               });
-              const response = await fetch(`https://api.financialdatasets.ai/prices/?${params}`, {
+              const response = await fetch(`https://api.financialdatasets.ai/prices/?${urlParams}`, {
                 headers: {
                   'X-API-Key': `${financialDatasetsApiKey}`
                 }
@@ -184,6 +192,11 @@ export async function POST(request: Request) {
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the income statements to return.  This lets us bound the data by date.'),
             }),
             execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              if (!shouldExecuteToolCall('getIncomeStatements', { ticker, period, limit, report_period_lte, report_period_gte })) {
+                console.log('Skipping duplicate getIncomeStatements call:', { ticker, period, limit, report_period_lte, report_period_gte });
+                return null;
+              }
+
               const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
 
               if (limit) params.append('limit', limit.toString());
@@ -209,6 +222,11 @@ export async function POST(request: Request) {
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the balance sheets to return.  This lets us bound the data by date.'),
             }),
             execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              if (!shouldExecuteToolCall('getBalanceSheets', { ticker, period, limit, report_period_lte, report_period_gte })) {
+                console.log('Skipping duplicate getBalanceSheets call:', { ticker, period, limit, report_period_lte, report_period_gte });
+                return null;
+              }
+
               const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
               if (limit) params.append('limit', limit.toString());
               if (report_period_lte) params.append('report_period_lte', report_period_lte);
@@ -233,6 +251,11 @@ export async function POST(request: Request) {
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the cash flow statements to return.  This lets us bound the data by date.'),
             }),
             execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              if (!shouldExecuteToolCall('getCashFlowStatements', { ticker, period, limit, report_period_lte, report_period_gte })) {
+                console.log('Skipping duplicate getCashFlowStatements call:', { ticker, period, limit, report_period_lte, report_period_gte });
+                return null;
+              }
+
               const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
               if (limit) params.append('limit', limit.toString());
               if (report_period_lte) params.append('report_period_lte', report_period_lte);
@@ -248,7 +271,7 @@ export async function POST(request: Request) {
             },
           },
           getFinancialMetrics: {
-            description: 'Get the financial metrics of a company',
+            description: 'Get the financial metrics of a company.  These financial metrics are derived metrics like P/E ratio, operating income, etc. that cannot be found in the income statement, balance sheet, or cash flow statement.',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get financial metrics for'),
               period: z.enum(['quarterly', 'annual', 'ttm']).default('ttm').describe('The period of the financial metrics to return'),
@@ -257,6 +280,11 @@ export async function POST(request: Request) {
               report_period_gte: z.string().optional().describe('The greater than or equal to date of the financial metrics to return.  This lets us bound the data by date.'),
             }),
             execute: async ({ ticker, period, limit, report_period_lte, report_period_gte }) => {
+              if (!shouldExecuteToolCall('getFinancialMetrics', { ticker, period, limit, report_period_lte, report_period_gte })) {
+                console.log('Skipping duplicate getFinancialMetrics call:', { ticker, period, limit, report_period_lte, report_period_gte });
+                return null;
+              }
+
               const params = new URLSearchParams({ ticker, period: period ?? 'ttm' });
               if (limit) params.append('limit', limit.toString());
               if (report_period_lte) params.append('report_period_lte', report_period_lte);
@@ -285,6 +313,11 @@ export async function POST(request: Request) {
               order_by: z.enum(['-report_period', 'report_period']).optional().default('-report_period').describe('The order of the stocks to return'),
             }),
             execute: async ({ filters, period, limit }) => {
+              if (!shouldExecuteToolCall('searchStocksByFilters', { filters, period, limit })) {
+                console.log('Skipping duplicate searchStocksByFilters call:', { filters, period, limit });
+                return null;
+              }
+
               const body = {
                 filters,
                 period: period ?? 'ttm',
@@ -610,7 +643,6 @@ export async function POST(request: Request) {
           if (session.user?.id) {
             try {
               const responseMessagesWithoutIncompleteToolCalls = sanitizeResponseMessages(response.messages);
-              console.log("response messages in onFinish", responseMessagesWithoutIncompleteToolCalls);
               
               if (responseMessagesWithoutIncompleteToolCalls.length > 0) {
                 await saveMessages({
