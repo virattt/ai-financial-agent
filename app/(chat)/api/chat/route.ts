@@ -51,14 +51,6 @@ type AllowedTools =
   | 'getFinancialMetrics'
   | 'searchStocksByFilters';
 
-const blocksTools: AllowedTools[] = [
-  'createDocument',
-  'updateDocument',
-  'requestSuggestions',
-];
-
-const weatherTools: AllowedTools[] = ['getWeather'];
-
 const financialDatasetsTools: AllowedTools[] = [
   'getCurrentStockPrice',
   'getStockPrices',
@@ -69,7 +61,7 @@ const financialDatasetsTools: AllowedTools[] = [
   'searchStocksByFilters',
 ];
 
-const allTools: AllowedTools[] = [...blocksTools, ...weatherTools, ...financialDatasetsTools];
+const allTools: AllowedTools[] = [...financialDatasetsTools];
 
 export async function POST(request: Request) {
   const {
