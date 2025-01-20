@@ -6,7 +6,7 @@ import { BlockKind } from './block';
 import { Suggestion } from '@/lib/db/schema';
 import { initialBlockData, useBlock } from '@/hooks/use-block';
 import { useUserMessageId } from '@/hooks/use-user-message-id';
-import { cx } from 'class-variance-authority';
+import { useToolLoading } from '@/hooks/use-tool-loading';
 
 type DataStreamDelta = {
   type:
@@ -18,14 +18,20 @@ type DataStreamDelta = {
     | 'clear'
     | 'finish'
     | 'user-message-id'
-    | 'kind';
-  content: string | Suggestion;
+    | 'kind'
+    | 'tool-loading';
+  content: string | Suggestion | { 
+    tool: string; 
+    isLoading: boolean;
+    message?: string;
+  };
 };
 
 export function DataStreamHandler({ id }: { id: string }) {
   const { data: dataStream } = useChat({ id });
   const { setUserMessageIdFromServer } = useUserMessageId();
   const { setBlock } = useBlock();
+  const { setToolLoading } = useToolLoading();
   const lastProcessedIndex = useRef(-1);
 
   useEffect(() => {
@@ -37,6 +43,16 @@ export function DataStreamHandler({ id }: { id: string }) {
     (newDeltas as DataStreamDelta[]).forEach((delta: DataStreamDelta) => {
       if (delta.type === 'user-message-id') {
         setUserMessageIdFromServer(delta.content as string);
+        return;
+      }
+
+      if (delta.type === 'tool-loading') {
+        const { tool, isLoading, message } = delta.content as { 
+          tool: string; 
+          isLoading: boolean;
+          message?: string;
+        };
+        setToolLoading(tool as any, isLoading, message);
         return;
       }
 
@@ -111,7 +127,7 @@ export function DataStreamHandler({ id }: { id: string }) {
         }
       });
     });
-  }, [dataStream, setBlock, setUserMessageIdFromServer]);
+  }, [dataStream, setBlock, setUserMessageIdFromServer, setToolLoading]);
 
   return null;
 }

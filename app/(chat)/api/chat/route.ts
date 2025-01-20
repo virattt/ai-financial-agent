@@ -318,6 +318,15 @@ export async function POST(request: Request) {
                 return null;
               }
 
+              dataStream.writeData({
+                type: 'tool-loading',
+                content: {
+                  tool: 'searchStocksByFilters',
+                  isLoading: true,
+                  message: 'Searching for stocks matching your criteria...'
+                }
+              });
+
               const body = {
                 filters,
                 period: period ?? 'ttm',
@@ -344,6 +353,16 @@ export async function POST(request: Request) {
               }
 
               const data = await response.json();
+
+              dataStream.writeData({
+                type: 'tool-loading',
+                content: {
+                  tool: 'searchStocksByFilters',
+                  isLoading: false,
+                  message: null,
+                }
+              });
+
               return data;
             },
           },
