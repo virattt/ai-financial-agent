@@ -28,6 +28,7 @@
     "@opentelemetry/api-logs": "^0.57.0",
     "@opentelemetry/instrumentation": "^0.46.0",
     "@opentelemetry/sdk-logs": "^0.46.0",
+    "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "^2.1.2",

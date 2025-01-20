@@ -10,6 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cx } from 'class-variance-authority';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface FinancialData {
   [key: string]: any;
@@ -69,50 +75,62 @@ export function FinancialsTable({
       .join(' ');
   };
 
+  const headerTitle = title ? `${title} (${formatPeriod(data[0].period)})` : formatPeriod(data[0].period);
+
   return (
-    <div className="border rounded-lg">
-      <div className="max-h-[400px] overflow-auto">
-        <Table>
-          <TableHeader className="sticky top-0">
-            <TableRow className="bg-muted z-10">
-              <TableHead className="w-[300px] min-w-[300px] font-bold border-r whitespace-nowrap bg-muted left-0">
-                {title ? `${title} (${formatPeriod(data[0].period)})` : formatPeriod(data[0].period)}
-              </TableHead>
-              {data.map((period, index) => (
-                <TableHead 
-                  key={period.report_period} 
-                  className={cx(
-                    "text-right font-bold whitespace-nowrap min-w-[120px]",
-                    { "border-r": index !== data.length - 1 }
-                  )}
-                >
-                  {format(new Date(period.report_period), 'MMM d, yyyy')}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {lineItems.map((item) => (
-              <TableRow key={item}>
-                <TableCell className="font-medium border-r w-[300px] min-w-[300px]">
-                  {formatLabel(item)}
-                </TableCell>
-                {data.map((period, index) => (
-                  <TableCell 
-                    key={period.report_period} 
-                    className={cx(
-                      "text-right",
-                      { "border-r": index !== data.length - 1 }
-                    )}
-                  >
-                    {formatValue(period[item])}
-                  </TableCell>
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="financials-table" className="border-none">
+        <div className="border rounded-lg">
+          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline rounded-t-lg">
+            <span>
+              <span className="font-bold">Source:</span>{" "}
+              <span className="text-muted-foreground">{headerTitle}</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted">
+                  <TableHead className="w-[300px] min-w-[300px] border-r whitespace-nowrap bg-muted left-0">
+                    Line Items
+                  </TableHead>
+                  {data.map((period, index) => (
+                    <TableHead 
+                      key={period.report_period} 
+                      className={cx(
+                        "text-right font-bold whitespace-nowrap min-w-[120px]",
+                        { "border-r": index !== data.length - 1 }
+                      )}
+                    >
+                      {format(new Date(period.report_period), 'MMM d, yyyy')}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {lineItems.map((item) => (
+                  <TableRow key={item}>
+                    <TableCell className="font-medium border-r w-[300px] min-w-[300px]">
+                      {formatLabel(item)}
+                    </TableCell>
+                    {data.map((period, index) => (
+                      <TableCell 
+                        key={period.report_period} 
+                        className={cx(
+                          "text-right",
+                          { "border-r": index !== data.length - 1 }
+                        )}
+                      >
+                        {formatValue(period[item])}
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+              </TableBody>
+            </Table>
+          </AccordionContent>
+        </div>
+      </AccordionItem>
+    </Accordion>
   );
 } 

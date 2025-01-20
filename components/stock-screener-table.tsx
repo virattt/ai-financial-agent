@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/table";
 import { cx } from 'class-variance-authority';
 import { ArrowUpDown } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface StockScreenerResult {
   ticker: string;
@@ -109,55 +115,67 @@ export function StockScreenerTable({
   });
 
   return (
-    <div className="border rounded-lg">
-      <div className="max-h-[600px] overflow-auto">
-        <Table>
-          <TableHeader className="sticky top-0">
-            <TableRow className="bg-muted z-10">
-              {metrics.map((metric, index) => (
-                <TableHead 
-                  key={metric}
-                  className={cx(
-                    "font-bold whitespace-nowrap cursor-pointer select-none",
-                    metric !== 'ticker' && "text-right",
-                    { "border-r": index !== metrics.length - 1 }
-                  )}
-                  onClick={() => handleSort(metric)}
-                >
-                  <div className="flex items-center gap-1 justify-between">
-                    {formatLabel(metric)}
-                    <ArrowUpDown className="h-4 w-4" />
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedData.map((result, rowIndex) => (
-              <TableRow key={`${result.ticker}-${result.report_period}`}>
-                {metrics.map((metric, colIndex) => (
-                  <TableCell 
-                    key={`${result.ticker}-${metric}`}
-                    className={cx(
-                      metric === 'ticker' ? "font-medium" : "text-right",
-                      { "border-r": colIndex !== metrics.length - 1 }
-                    )}
-                  >
-                    {metric === 'report_period' 
-                      ? format(new Date(result[metric]), 'MMM d, yyyy')
-                      : formatValue(result[metric], metric, result.currency)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="p-2 text-sm text-muted-foreground bg-muted border-t">
-        {`${data[0].period.toLowerCase() === 'ttm' 
-          ? 'TTM' 
-          : data[0].period.charAt(0).toUpperCase() + data[0].period.slice(1)} data in ${data[0].currency}`}
-      </div>
-    </div>
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="stock-screener-table" className="border-none">
+        <div className="border rounded-lg">
+          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline rounded-t-lg">
+            <span>
+              <span className="font-bold">Source:</span>{" "}
+              <span className="text-muted-foreground">Stock Screener Results</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="max-h-[600px] overflow-auto">
+              <Table>
+                <TableHeader className="sticky top-0">
+                  <TableRow className="bg-muted z-10">
+                    {metrics.map((metric, index) => (
+                      <TableHead 
+                        key={metric}
+                        className={cx(
+                          "font-bold whitespace-nowrap cursor-pointer select-none",
+                          metric !== 'ticker' && "text-right",
+                          { "border-r": index !== metrics.length - 1 }
+                        )}
+                        onClick={() => handleSort(metric)}
+                      >
+                        <div className="flex items-center gap-1 justify-between">
+                          {formatLabel(metric)}
+                          <ArrowUpDown className="h-4 w-4" />
+                        </div>
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sortedData.map((result, rowIndex) => (
+                    <TableRow key={`${result.ticker}-${result.report_period}`}>
+                      {metrics.map((metric, colIndex) => (
+                        <TableCell 
+                          key={`${result.ticker}-${metric}`}
+                          className={cx(
+                            metric === 'ticker' ? "font-medium" : "text-right",
+                            { "border-r": colIndex !== metrics.length - 1 }
+                          )}
+                        >
+                          {metric === 'report_period' 
+                            ? format(new Date(result[metric]), 'MMM d, yyyy')
+                            : formatValue(result[metric], metric, result.currency)}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="p-2 text-sm text-muted-foreground bg-muted border-t">
+              {`${data[0].period.toLowerCase() === 'ttm' 
+                ? 'TTM' 
+                : data[0].period.charAt(0).toUpperCase() + data[0].period.slice(1)} data in ${data[0].currency}`}
+            </div>
+          </AccordionContent>
+        </div>
+      </AccordionItem>
+    </Accordion>
   );
 } 

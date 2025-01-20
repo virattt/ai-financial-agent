@@ -124,11 +124,6 @@ const PurePreviewMessage = ({
               <div className="flex flex-col gap-4">
                 {message.toolInvocations.map((toolInvocation) => {
                   const { toolName, toolCallId, state, args } = toolInvocation;
-
-                  if (toolName === 'getFinancialMetrics') {
-                    console.log("args", args);
-                    return <div/>
-                  }
                   
                   if (state === 'result') {
                     const { result } = toolInvocation;
@@ -142,17 +137,22 @@ const PurePreviewMessage = ({
                         ) : toolName === 'getIncomeStatements' ? (
                           <FinancialsTable 
                             data={result.income_statements} 
-                            title="Income Statement"
+                            title="Income Statements"
                           />
                         ) : toolName === 'getBalanceSheets' ? (
                           <FinancialsTable 
                             data={result.balance_sheets} 
-                            title="Balance Sheet"
+                            title="Balance Sheets"
                           />
                         ) : toolName === 'getCashFlowStatements' ? (
                           <FinancialsTable 
                             data={result.cash_flow_statements} 
-                            title="Cash Flow Statement"
+                            title="Cash Flow Statemens"
+                          />
+                        ) : toolName === 'getFinancialMetrics' ? (
+                          <FinancialsTable 
+                            data={result.financial_metrics} 
+                            title="Financial Metrics"
                           />
                         ) : toolName === 'searchStocksByFilters' ? (
                           <StockScreenerTable 
