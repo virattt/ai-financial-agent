@@ -147,7 +147,7 @@ const PurePreviewMessage = ({
                         ) : toolName === 'getCashFlowStatements' ? (
                           <FinancialsTable 
                             data={result.cash_flow_statements} 
-                            title="Cash Flow Statemens"
+                            title="Cash Flow Statements"
                           />
                         ) : toolName === 'getFinancialMetrics' ? (
                           <FinancialsTable 

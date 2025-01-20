@@ -115,10 +115,10 @@ export function StockScreenerTable({
   });
 
   return (
-    <Accordion type="single" collapsible className="w-full">
+    <Accordion type="single" collapsible className="w-full py=">
       <AccordionItem value="stock-screener-table" className="border-none">
         <div className="border rounded-lg">
-          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline rounded-t-lg">
+          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline bg-muted rounded-t-lg">
             <span>
               <span className="font-bold">Source:</span>{" "}
               <span className="text-muted-foreground">Stock Screener Results</span>
@@ -127,7 +127,7 @@ export function StockScreenerTable({
           <AccordionContent>
             <div className="max-h-[600px] overflow-auto">
               <Table>
-                <TableHeader className="sticky top-0">
+                <TableHeader className="sticky top-0 bg-muted">
                   <TableRow className="bg-muted z-10">
                     {metrics.map((metric, index) => (
                       <TableHead 

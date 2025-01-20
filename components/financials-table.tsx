@@ -81,15 +81,15 @@ export function FinancialsTable({
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="financials-table" className="border-none">
         <div className="border rounded-lg">
-          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline rounded-t-lg">
-            <span>
+        <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+        <span>
               <span className="font-bold">Source:</span>{" "}
               <span className="text-muted-foreground">{headerTitle}</span>
             </span>
           </AccordionTrigger>
           <AccordionContent>
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted">
                 <TableRow className="bg-muted">
                   <TableHead className="w-[300px] min-w-[300px] border-r whitespace-nowrap bg-muted left-0">
                     Line Items
@@ -98,7 +98,7 @@ export function FinancialsTable({
                     <TableHead 
                       key={period.report_period} 
                       className={cx(
-                        "text-right font-bold whitespace-nowrap min-w-[120px]",
+                        "text-right font-bold whitespace-nowrap min-w-[120px] hover:bg-muted",
                         { "border-r": index !== data.length - 1 }
                       )}
                     >
