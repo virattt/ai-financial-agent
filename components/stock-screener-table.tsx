@@ -18,6 +18,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Blue } from './styles/colors';
 
 interface StockScreenerResult {
   ticker: string;
@@ -118,10 +121,15 @@ export function StockScreenerTable({
     <Accordion type="single" collapsible className="w-full py=">
       <AccordionItem value="stock-screener-table" className="border-none">
         <div className="border rounded-lg">
-          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline bg-muted rounded-t-lg">
-            <span>
-              <span className="font-bold">Retrieved data:</span>{" "}
-              <span className="text-muted-foreground">Stock Screener Results</span>
+          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted/50 rounded-t-lg">
+            <span className="flex flex-row items-center gap-2">
+            <FontAwesomeIcon
+                icon={faCheckCircle}
+                size={'sm'}
+                color={Blue}
+              />
+              <span className="text-sm">Retrieved data:</span>{" "}
+              <span className="text-muted-foreground text-sm">Search Results</span>
             </span>
           </AccordionTrigger>
           <AccordionContent>

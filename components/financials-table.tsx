@@ -16,6 +16,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { Blue } from './styles/colors';
 
 interface FinancialData {
   [key: string]: any;
@@ -82,11 +85,16 @@ export function FinancialsTable({
       <AccordionItem value="financials-table" className="border-none">
         <div className="border rounded-lg">
         <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
-        <span>
-              <span className="font-bold">Retrieved data:</span>{" "}
-              <span className="text-muted-foreground">{headerTitle}</span>
-            </span>
-          </AccordionTrigger>
+          <span className="flex flex-row items-center gap-2">
+            <FontAwesomeIcon
+                icon={faCheckCircle}
+                size={'sm'}
+                color={Blue}
+              />
+              <span className="text-sm">Retrieved data:</span>{" "}
+              <span className="text-muted-foreground text-sm">{headerTitle}</span>
+          </span>
+        </AccordionTrigger>
           <AccordionContent>
             <Table>
               <TableHeader className="bg-muted">
