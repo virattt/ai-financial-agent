@@ -3,35 +3,18 @@
 import { useChat } from 'ai/react';
 import { useEffect, useRef } from 'react';
 import { BlockKind } from './block';
-import { Suggestion } from '@/lib/db/schema';
 import { initialBlockData, useBlock } from '@/hooks/use-block';
 import { useUserMessageId } from '@/hooks/use-user-message-id';
 import { useToolLoading } from '@/hooks/use-tool-loading';
-
-type DataStreamDelta = {
-  type:
-    | 'text-delta'
-    | 'code-delta'
-    | 'title'
-    | 'id'
-    | 'suggestion'
-    | 'clear'
-    | 'finish'
-    | 'user-message-id'
-    | 'kind'
-    | 'tool-loading';
-  content: string | Suggestion | { 
-    tool: string; 
-    isLoading: boolean;
-    message?: string;
-  };
-};
+import { useQueryLoading } from '@/hooks/use-query-loading';
+import { DataStreamDelta, ToolLoadingContent, QueryLoadingContent } from '@/lib/types/data-stream';
 
 export function DataStreamHandler({ id }: { id: string }) {
   const { data: dataStream } = useChat({ id });
   const { setUserMessageIdFromServer } = useUserMessageId();
   const { setBlock } = useBlock();
   const { setToolLoading } = useToolLoading();
+  const { setQueryLoading } = useQueryLoading();
   const lastProcessedIndex = useRef(-1);
 
   useEffect(() => {
@@ -47,12 +30,14 @@ export function DataStreamHandler({ id }: { id: string }) {
       }
 
       if (delta.type === 'tool-loading') {
-        const { tool, isLoading, message } = delta.content as { 
-          tool: string; 
-          isLoading: boolean;
-          message?: string;
-        };
+        const { tool, isLoading, message } = delta.content as ToolLoadingContent;
         setToolLoading(tool as any, isLoading, message);
+        return;
+      }
+
+      if (delta.type === 'query-loading') {
+        const { isLoading, taskNames, message } = delta.content as QueryLoadingContent;
+        setQueryLoading(isLoading, taskNames);
         return;
       }
 
@@ -127,7 +112,7 @@ export function DataStreamHandler({ id }: { id: string }) {
         }
       });
     });
-  }, [dataStream, setBlock, setUserMessageIdFromServer, setToolLoading]);
+  }, [dataStream, setBlock, setUserMessageIdFromServer, setToolLoading, setQueryLoading]);
 
   return null;
 }
