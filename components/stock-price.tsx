@@ -2,6 +2,15 @@
 
 import cx from 'classnames';
 import { format } from 'date-fns';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { Blue, Green, Pink } from '@/components/styles/colors';
 
 interface StockSnapshot {
   snapshot?: {
@@ -33,22 +42,60 @@ export function StockPrice({
   // If there's an error, display error message
   if (stockData.error) {
     return (
-      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
-        <div className="text-red-400 text-sm">
-          {stockData.message || 'An error occurred while fetching stock data'}
-        </div>
-      </div>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="stock-price" className="border-none">
+          <div className="border rounded-lg">
+            <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+              <span className="flex flex-row items-center gap-2">
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  size={'sm'}
+                  color={Blue}
+                />
+                <span className="text-sm">Retrieved data:</span>{" "}
+                <span className="text-muted-foreground text-sm">Stock Price (Error)</span>
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px] mt-4">
+                <div className="text-red-400 text-sm">
+                  {stockData.message || 'An error occurred while fetching stock data'}
+                </div>
+              </div>
+            </AccordionContent>
+          </div>
+        </AccordionItem>
+      </Accordion>
     );
   }
 
   // Ensure snapshot exists before destructuring
   if (!stockData.snapshot) {
     return (
-      <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
-        <div className="text-slate-400 text-sm">
-          No stock data available
-        </div>
-      </div>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="stock-price" className="border-none">
+          <div className="border rounded-lg">
+            <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+              <span className="flex flex-row items-center gap-2">
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  size={'sm'}
+                  color={Blue}
+                />
+                <span className="text-sm">Retrieved data:</span>{" "}
+                <span className="text-muted-foreground text-sm">Stock Price (No Data)</span>
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
+                <div className="text-slate-400 text-sm">
+                  No stock data available
+                </div>
+              </div>
+            </AccordionContent>
+          </div>
+        </AccordionItem>
+      </Accordion>
     );
   }
 
@@ -56,29 +103,54 @@ export function StockPrice({
   const isPositive = day_change >= 0;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl p-4 bg-slate-100 dark:bg-slate-800 max-w-[500px]">
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-row gap-4 items-center">
-          <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{ticker}</div>
-          <div className="text-3xl font-medium text-slate-900 dark:text-slate-100">
-            ${price.toFixed(2)}
-          </div>
-        </div>
-        
-        <div className={cx(
-          "flex flex-row items-center gap-2 text-sm font-medium",
-          isPositive ? "text-green-400" : "text-red-400"
-        )}>
-          <span>{isPositive ? "+" : ""}{day_change.toFixed(2)}</span>
-          <span>({isPositive ? "+" : ""}{day_change_percent.toFixed(2)}%)</span>
-        </div>
-      </div>
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="stock-price" className="border-none">
+        <div className="border rounded-lg">
+          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+            <span className="flex flex-row items-center gap-2">
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                size={'sm'}
+                color={Blue}
+              />
+              <span className="text-sm">Retrieved data:</span>{" "}
+              <span className="text-muted-foreground text-sm">{ticker} (Current Price)</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="flex flex-col gap-1 rounded-md p-4 bg-background max-w-[500px] ml-4">
+              <div className="ml-1">
+                <div className="text-2xl">
+                  {ticker}
+                </div>
+                <div className="text-xl font-bold mb-1">
+                  ${price.toFixed(2)}
+                </div>
+                <div className="text-sm font-bold flex">
+                  <div className="mr-2">
+                    {isPositive ? (
+                      <span style={{ color: Green }}>+${day_change.toFixed(2)}</span>
+                    ) : (
+                      <span style={{ color: Pink }}>-${Math.abs(day_change).toFixed(2)}</span>
+                    )}
+                  </div>
+                  <div>
+                    {isPositive ? (
+                      <span style={{ color: Green }}>(+{day_change_percent.toFixed(2)}%)</span>
+                    ) : (
+                      <span style={{ color: Pink }}>({day_change_percent.toFixed(2)}%)</span>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-      <div className="flex flex-row justify-between items-center">
-        <div className="text-xs text-slate-400">
-          Last updated: {format(new Date(time), 'MMM d, h:mm a')}
+              <div className="text-xs text-muted-foreground ml-1">
+                Last updated: {format(new Date(time), 'MMM d, h:mm a')}
+              </div>
+            </div>
+          </AccordionContent>
         </div>
-      </div>
-    </div>
+      </AccordionItem>
+    </Accordion>
   );
 } 

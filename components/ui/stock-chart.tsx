@@ -10,7 +10,15 @@ import {
   XAxis,
   YAxis
 } from "recharts";
-import { DarkCharcoal, Gray, Green, Pink, White } from "@/components/styles/colors";
+import { DarkCharcoal, Gray, Green, Pink, White, Blue } from "@/components/styles/colors";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 export interface PriceData {
   open: number;
@@ -28,17 +36,36 @@ export interface StockChartProps {
 
 export function StockChart(props: StockChartProps) {
   return (
-    <div style={{ minWidth: "750px" }}>
-      <ChartHeader ticker={props.ticker} prices={props.prices} />
-      <Chart
-        data={props.prices.map((price) => {
-          return ({
-            date: formatDate(price.time),
-            value: price.close,
-          });
-        })}
-      />
-    </div>
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value="stock-chart" className="border-none">
+        <div className="border rounded-lg">
+          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+            <span className="flex flex-row items-center gap-2">
+              <FontAwesomeIcon
+                icon={faCheckCircle}
+                size={'sm'}
+                color={Blue}
+              />
+              <span className="text-sm">Retrieved data:</span>{" "}
+              <span className="text-muted-foreground text-sm">{props.ticker} (Prices)</span>
+            </span>
+          </AccordionTrigger>
+          <AccordionContent>
+            <div className="flex flex-col gap-4 rounded-md p-4 bg-background max-w-[750px]">
+              <ChartHeader ticker={props.ticker} prices={props.prices} />
+              <Chart
+                data={props.prices.map((price) => {
+                  return ({
+                    date: formatDate(price.time),
+                    value: price.close,
+                  });
+                })}
+              />
+            </div>
+          </AccordionContent>
+        </div>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
@@ -125,10 +152,10 @@ function Chart({ data }: ChartProps) {
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="stock-tooltip">
-        <div className="row mx-1">
-          <span className="label" color={DarkCharcoal} style={{ fontWeight: "bold" }}>${`${payload[0].value}`}</span>
-          <span className="ml-2" color={Gray}>{`${payload[0].payload.date}`}</span>
+      <div className="stock-tooltip bg-background border rounded-md px-3 py-2 shadow-md">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-foreground">${`${payload[0].value}`}</span>
+          <span className="text-muted-foreground">{`${payload[0].payload.date}`}</span>
         </div>
       </div>
     );
@@ -166,15 +193,15 @@ function ChartHeader({
   const dollarDifference = endPrice - startPrice;
 
   return (
-    <div>
-      <div style={{ fontSize: "28px" }}>
+    <div className="ml-4">
+      <div className="text-2xl">
         {ticker}
       </div>
-      <div style={{ fontSize: "24px", fontWeight: "bold" }}>
+      <div className="text-xl font-bold mb-1">
         ${prices[prices.length - 1].close.toFixed(2)}
       </div>
-      <div style={{ fontSize: "12px", fontWeight: "bold", display: "flex" }}>
-        <div style={{ marginRight: "8px" }}>
+      <div className="text-sm font-bold flex">
+        <div className="mr-2">
           {dollarDifference > 0 ? (
             <span style={{ color: Green }}>+${dollarDifference.toFixed(2)}</span>
           ) : (
