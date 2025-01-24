@@ -38,6 +38,9 @@ export function FinancialsTable({
 }: FinancialsTableProps) {
   if (!data || data.length === 0) return null;
 
+  // Get ticker from first data item
+  const ticker = data[0].ticker;
+
   // Get all unique keys from the data, excluding specified fields
   const lineItems = Object.keys(data[0]).filter(key => !excludeFields.includes(key));
 
@@ -78,7 +81,7 @@ export function FinancialsTable({
       .join(' ');
   };
 
-  const headerTitle = title ? `${title} (${formatPeriod(data[0].period)})` : formatPeriod(data[0].period);
+  const headerTitle = title ? `${ticker} (${title} • ${formatPeriod(data[0].period)})` : `${ticker} (${formatPeriod(data[0].period)})`;
 
   return (
     <Accordion type="single" collapsible className="w-full">
