@@ -20,7 +20,6 @@ import { MessageEditor } from './message-editor';
 import { FinancialsTable } from './financials-table';
 import { StockChart } from './ui/stock-chart';
 import { StockScreenerTable } from './stock-screener-table';
-import { LoaderIcon } from './icons';
 
 const PurePreviewMessage = ({
   chatId,
@@ -121,7 +120,7 @@ const PurePreviewMessage = ({
               <div className="flex flex-col gap-4">
                 {message.toolInvocations.map((toolInvocation) => {
                   const { toolName, toolCallId, state, args } = toolInvocation;
-                  
+
                   if (state === 'result') {
                     const { result } = toolInvocation;
 
@@ -132,28 +131,28 @@ const PurePreviewMessage = ({
                         ) : toolName === 'getStockPrices' ? (
                           <StockChart ticker={result.ticker} prices={result.prices} />
                         ) : toolName === 'getIncomeStatements' ? (
-                          <FinancialsTable 
-                            data={result.income_statements} 
+                          <FinancialsTable
+                            data={result.income_statements}
                             title="Income Statements"
                           />
                         ) : toolName === 'getBalanceSheets' ? (
-                          <FinancialsTable 
-                            data={result.balance_sheets} 
+                          <FinancialsTable
+                            data={result.balance_sheets}
                             title="Balance Sheets"
                           />
                         ) : toolName === 'getCashFlowStatements' ? (
-                          <FinancialsTable 
-                            data={result.cash_flow_statements} 
+                          <FinancialsTable
+                            data={result.cash_flow_statements}
                             title="Cash Flow Statements"
                           />
                         ) : toolName === 'getFinancialMetrics' ? (
-                          <FinancialsTable 
-                            data={result.financial_metrics} 
+                          <FinancialsTable
+                            data={result.financial_metrics}
                             title="Financial Metrics"
                           />
                         ) : toolName === 'searchStocksByFilters' ? (
-                          <StockScreenerTable 
-                            data={result.search_results} 
+                          <StockScreenerTable
+                            data={result.search_results}
                           />
                         ) : (
                           <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
@@ -162,7 +161,7 @@ const PurePreviewMessage = ({
                     );
                   }
                   return (
-                    <div key={toolCallId}/>
+                    <div key={toolCallId} />
                   );
                 })}
               </div>
@@ -225,7 +224,7 @@ export const ThinkingMessage = () => {
         </div>
 
         <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
+          <div className="flex flex-col gap-4 text-muted-foreground text-sm">
             Thinking...
           </div>
         </div>
@@ -234,7 +233,7 @@ export const ThinkingMessage = () => {
   );
 };
 
-export const LoadingMessage = ({message}: {message: string | null}) => {
+export const LoadingMessage = ({ loadingMessages }: { loadingMessages: string[] }) => {
   const role = 'assistant';
 
   return (
@@ -252,13 +251,14 @@ export const LoadingMessage = ({message}: {message: string | null}) => {
           },
         )}
       >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
-        </div>
-
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            <span>{message}</span>
+            {loadingMessages.map((message, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent text-[#2383F4] align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+                <span className="text-sm text-foreground">{message}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

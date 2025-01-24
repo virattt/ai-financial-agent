@@ -4,7 +4,7 @@ import { useScrollToBottom } from './use-scroll-to-bottom';
 import { memo } from 'react';
 import { Vote } from '@/lib/db/schema';
 import equal from 'fast-deep-equal';
-import { useToolLoadingSelector } from '@/hooks/use-tool-loading';
+import { useQueryLoadingSelector } from '@/hooks/use-query-loading';
 
 interface MessagesProps {
   chatId: string;
@@ -33,21 +33,16 @@ function PureMessages({
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
 
-  const isSearchStocksByFiltersLoading = useToolLoadingSelector(
-    (state) => state.searchStocksByFilters?.loading
-  );
-  const searchStocksByFiltersMessage = useToolLoadingSelector(
-    (state) => state.searchStocksByFilters?.message
-  );
-  
+  const queryLoadingState = useQueryLoadingSelector(state => state);
+
+  const loadingMessages = queryLoadingState.taskNames.length > 0
+    ? queryLoadingState.taskNames
+    : ["Searching..."];
 
   return (
     <div
-      // ref={messagesContainerRef} this is causing the scroll to bottom to be too aggressive
       className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
     >
-      {/* {messages.length === 0 && <Overview />} */}
-
       {messages.map((message, index) => (
         <PreviewMessage
           key={message.id}
@@ -69,8 +64,8 @@ function PureMessages({
         messages.length > 0 &&
         messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
 
-      {isSearchStocksByFiltersLoading && (
-        <LoadingMessage message={searchStocksByFiltersMessage ?? "Searching..."} />
+      {queryLoadingState.isLoading && (
+        <LoadingMessage loadingMessages={loadingMessages} />
       )}
 
       <div
