@@ -17,10 +17,12 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { useQueryLoading } from '@/hooks/use-query-loading';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
+  const { setQueryLoading } = useQueryLoading();
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0 bg-sidebar">
@@ -48,6 +50,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                   className="p-2 h-fit"
                   onClick={() => {
                     setOpenMobile(false);
+                    setQueryLoading(false, []);
                     router.push('/');
                     router.refresh();
                   }}

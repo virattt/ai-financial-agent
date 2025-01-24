@@ -30,6 +30,7 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import { TickerSuggestions } from './ticker-suggestions';
+import { useQueryLoading } from '@/hooks/use-query-loading';
 
 const TICKER_SUGGESTIONS = ['AAPL', 'GOOGL', 'MSFT', 'NVDA', 'TSLA'];
 
@@ -409,12 +410,15 @@ function PureStopButton({
   stop: () => void;
   setMessages: Dispatch<SetStateAction<Array<Message>>>;
 }) {
+  const { setQueryLoading } = useQueryLoading();
+
   return (
     <Button
       className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
       onClick={(event) => {
         event.preventDefault();
         stop();
+        setQueryLoading(false, []);
         setMessages((messages) => sanitizeUIMessages(messages));
       }}
     >
