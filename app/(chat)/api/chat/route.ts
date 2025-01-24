@@ -2,6 +2,7 @@ import {
   type Message,
   convertToCoreMessages,
   createDataStreamResponse,
+  generateObject,
   streamObject,
   streamText,
 } from 'ai';
@@ -34,6 +35,7 @@ import {
 import { generateTitleFromUserMessage } from '../../actions';
 import { AISDKExporter } from 'langsmith/vercel';
 import { validStockSearchFilters } from '@/lib/api/stock-filters';
+import { openai } from '@ai-sdk/openai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -116,19 +118,127 @@ export async function POST(request: Request) {
   };
 
   return createDataStreamResponse({
-    execute: (dataStream) => {
+    execute: async (dataStream) => {
       dataStream.writeData({
         type: 'user-message-id',
         content: userMessageId,
       });
 
+      dataStream.writeData({
+        type: 'query-loading',
+        content: {
+          isLoading: true,
+          taskNames: ['Analyzing your query...']
+        }
+      });
+
+      const { object } = await generateObject({
+        model: openai('gpt-4o-mini'),
+        output: 'array',
+        schema: z.object({
+          task_name: z.string(),
+          class: z
+            .string()
+            .describe('The name of the sub-task'),
+        }),
+        prompt: `You are a reasoning agent.  
+        Given the following user query: ${userMessage.content}, 
+        break it down to small, tightly-scoped sub-tasks 
+        that need to be taken to answer the query.  
+        The task name should include the ticker or company name where appropriate.  
+        The task name must be in the present progressive tense as if you are telling another agent what to do.
+        The task name should be short (max 5 words), but comprehensive.
+        Create the least number of tasks possible, but make sure they are comprehensive to answer the query.
+        Your output will be given to another LLM, which will use tools to execute the tasks.
+        Make sure your tasks are not too complex and can be completed with the optimal number of tools.
+        Make your task names friendly, concise, easy to understand, and accessible.
+        Example: "Getting current price for AAPL", "Analyzing revenue trends", etc.`,
+      });
+
+      // Stream the tasks in the query loading state
+      dataStream.writeData({
+        type: 'query-loading',
+        content: {
+          isLoading: true,
+          taskNames: object.map(task => task.task_name)
+        }
+      });
+
+      let receivedFirstChunk = false;
+
+      // Create a transient version of coreMessages with task names
+      const coreMessagesWithTaskNames = [...coreMessages];
+      // Replace the last user message content with task names
+      const lastMessage = coreMessagesWithTaskNames[coreMessagesWithTaskNames.length - 1];
+      if (coreMessagesWithTaskNames.length > 0 && lastMessage?.role === 'user') {
+        const taskList = object.map(task => task.task_name).join('\n');
+        coreMessagesWithTaskNames[coreMessagesWithTaskNames.length - 1] = {
+          role: 'user',
+          content: taskList
+        };
+      }
+
       const result = streamText({
         model: customModel(model.apiIdentifier),
         system: systemPrompt,
-        messages: coreMessages,
+        messages: coreMessagesWithTaskNames,
         maxSteps: 10,
         experimental_activeTools: allTools,
         experimental_telemetry: AISDKExporter.getSettings(),
+        onChunk: (event) => {
+          const isToolCall = event.chunk.type === 'tool-call';
+          if (!receivedFirstChunk && !isToolCall) {
+            receivedFirstChunk = true;
+            // Set query-loading to false on first token
+            dataStream.writeData({
+              type: 'query-loading',
+              content: {
+                isLoading: false,
+                taskNames: []
+              }
+            });
+          }
+        },
+        onFinish: async ({ response }) => {
+          // CAUTION: this is a hack to prevent stream from being cut off :(
+          // TODO: find a better solution
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // save the response
+          if (session.user?.id) {
+            try {
+              const responseMessagesWithoutIncompleteToolCalls = sanitizeResponseMessages(response.messages);
+
+              if (responseMessagesWithoutIncompleteToolCalls.length > 0) {
+                await saveMessages({
+                  messages: responseMessagesWithoutIncompleteToolCalls.map(
+                    (message) => {
+                      const messageId = generateUUID();
+
+                      if (message.role === 'assistant') {
+                        dataStream.writeMessageAnnotation({
+                          messageIdFromServer: messageId,
+                        });
+                      }
+
+                      return {
+                        id: messageId,
+                        chatId: id,
+                        role: message.role,
+                        content: message.content,
+                        createdAt: new Date(),
+                      };
+                    },
+                  ),
+                });
+              } else {
+                console.log('No valid messages to save');
+              }
+            } catch (error) {
+              console.error('Failed to save chat:', error);
+            }
+          }
+        },
         tools: {
           getCurrentStockPrice: {
             description: 'Use this tool to get the current price snapshot of a stock only',
@@ -332,7 +442,7 @@ export async function POST(request: Request) {
                 period: period ?? 'ttm',
                 limit: limit ?? 5,
               };
-              
+
               const response = await fetch('https://api.financialdatasets.ai/financials/search/', {
                 method: 'POST',
                 headers: {
@@ -341,7 +451,7 @@ export async function POST(request: Request) {
                 },
                 body: JSON.stringify(body)
               });
-              
+
               if (!response.ok) {
                 const errorText = await response.text();
                 console.error('API Error:', {
@@ -652,46 +762,6 @@ export async function POST(request: Request) {
               };
             },
           },
-        },
-        onFinish: async ({ response }) => {
-          // CAUTION: this is a hack to prevent stream from being cut off :(
-          // TODO: find a better solution
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          // save the response
-          if (session.user?.id) {
-            try {
-              const responseMessagesWithoutIncompleteToolCalls = sanitizeResponseMessages(response.messages);
-              
-              if (responseMessagesWithoutIncompleteToolCalls.length > 0) {
-                await saveMessages({
-                  messages: responseMessagesWithoutIncompleteToolCalls.map(
-                    (message) => {
-                      const messageId = generateUUID();
-
-                      if (message.role === 'assistant') {
-                        dataStream.writeMessageAnnotation({
-                          messageIdFromServer: messageId,
-                        });
-                      }
-
-                      return {
-                        id: messageId,
-                        chatId: id,
-                        role: message.role,
-                        content: message.content,
-                        createdAt: new Date(),
-                      };
-                    },
-                  ),
-                });
-              } else {
-                console.log('No valid messages to save');
-              }
-            } catch (error) {
-              console.error('Failed to save chat:', error);
-            }
-          }
         },
       });
 
