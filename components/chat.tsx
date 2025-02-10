@@ -78,7 +78,7 @@ export function Chat({
       }
 
       // Check if user has reached their free message limit
-      const maxFreeMessageCount = 3;
+      const maxFreeMessageCount = 0;
       const localApiKey = getLocalOpenAIApiKey();
       if (data.count >= maxFreeMessageCount && !localApiKey) {
         setShowApiKeysModal(true);
