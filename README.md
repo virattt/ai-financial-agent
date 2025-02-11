@@ -74,12 +74,7 @@ LANGCHAIN_TRACING_V2=true
 LANGCHAIN_PROJECT=ai-financial-agent
 ```
 
-Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
-
-> If you want to deploy your own version of the AI Financial Agent in production, you need to link your local instance with your Vercel and GitHub accounts.
-> 1. Install Vercel CLI: `npm i -g vercel`
-> 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-> 3. Download your environment variables: `vercel env pull`
+**Important**: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
 ## Usage 🎮
 
@@ -98,7 +93,7 @@ The Financial Datasets API provides real-time and historical stock market data a
 
 Data includes financial statements, stock prices, options data, insider trades, institutional ownership, and much more.  You can learn more about the API via the documentation [here](https://docs.financialdatasets.ai).
 
-> Note: Data is free for AAPL, GOOGL, MSFT, NVDA, and TSLA.
+**Note**: Data is free for AAPL, GOOGL, MSFT, NVDA, and TSLA.
 
 If you do not want to use the Financial Datasets API, you can easily switch to another data provider by modifying a few lines of code.
 
@@ -107,5 +102,11 @@ If you do not want to use the Financial Datasets API, you can easily switch to a
 You can deploy your own version of the AI Financial Agent in production via Vercel with one click:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvirattt%2Fai-financial-agent&env=AUTH_SECRET,OPENAI_API_KEY&envDescription=Learn%20more%20about%20how%20to%20get%20the%20API%20Keys%20for%20the%20application&envLink=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-financial-agent%2Fblob%2Fmain%2F.env.example&demo-title=AI%20Financial%20Agent&demo-description=An%20open-source%20financial%20agent%20chat%20template%20built%20with%20the%20AI%20SDK%20by%20Vercel%20and%20Financial%20Datasets%20API.&demo-url=https%3A%2F%2Fchat.vercel.ai&stores=[{%22type%22:%22postgres%22},{%22type%22:%22blob%22}])
+
+If you want to deploy your own version of the AI Financial Agent in production, you need to link your local instance with your Vercel and GitHub accounts.
+
+1. Install Vercel CLI: `npm i -g vercel`
+2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
+3. Download your environment variables: `vercel env pull`
 
 
