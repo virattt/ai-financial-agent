@@ -32,6 +32,7 @@ export function Chat({
 }) {
   const { mutate } = useSWRConfig();
   const financialDatasetsApiKey = getFinancialDatasetsApiKey();
+  const openAIApiKey = getLocalOpenAIApiKey();
   const [showApiKeysModal, setShowApiKeysModal] = useState(false);
 
   const {
@@ -49,7 +50,8 @@ export function Chat({
     body: { 
       id, 
       modelId: selectedModelId,
-      financialDatasetsApiKey
+      modelApiKey: openAIApiKey,
+      financialDatasetsApiKey,
     },
     initialMessages,
     experimental_throttle: 100,

@@ -64,8 +64,14 @@ export async function POST(request: Request) {
     messages,
     modelId,
     financialDatasetsApiKey,
-  }: { id: string; messages: Array<Message>; modelId: string; financialDatasetsApiKey?: string } =
-    await request.json();
+    modelApiKey,
+  }: {
+    id: string;
+    messages: Array<Message>;
+    modelId: string;
+    financialDatasetsApiKey?: string;
+    modelApiKey?: string;
+  } = await request.json();
 
   const session = await auth();
 
@@ -77,6 +83,10 @@ export async function POST(request: Request) {
 
   if (!model) {
     return new Response('Model not found', { status: 404 });
+  }
+
+  if (!modelApiKey) {
+    return new Response('Model API key is required', { status: 400 });
   }
 
   const coreMessages = convertToCoreMessages(messages);
@@ -130,7 +140,7 @@ export async function POST(request: Request) {
       });
 
       const { object } = await generateObject({
-        model: customModel('gpt-4o-mini'),
+        model: customModel('gpt-4o-mini', modelApiKey),
         output: 'array',
         schema: z.object({
           task_name: z.string(),
@@ -176,7 +186,7 @@ export async function POST(request: Request) {
       }
 
       const result = streamText({
-        model: customModel(model.apiIdentifier),
+        model: customModel(model.apiIdentifier, modelApiKey),
         system: systemPrompt,
         messages: coreMessagesWithTaskNames,
         maxSteps: 10,
@@ -510,7 +520,7 @@ export async function POST(request: Request) {
 
               if (kind === 'text') {
                 const { fullStream } = streamText({
-                  model: customModel(model.apiIdentifier),
+                  model: customModel(model.apiIdentifier, modelApiKey),
                   system:
                     'Write about the given topic. Markdown is supported. Use headings wherever appropriate.',
                   prompt: title,
@@ -533,7 +543,7 @@ export async function POST(request: Request) {
                 dataStream.writeData({ type: 'finish', content: '' });
               } else if (kind === 'code') {
                 const { fullStream } = streamObject({
-                  model: customModel(model.apiIdentifier),
+                  model: customModel(model.apiIdentifier, modelApiKey),
                   system: codePrompt,
                   prompt: title,
                   schema: z.object({
@@ -608,7 +618,7 @@ export async function POST(request: Request) {
 
               if (document.kind === 'text') {
                 const { fullStream } = streamText({
-                  model: customModel(model.apiIdentifier),
+                  model: customModel(model.apiIdentifier, modelApiKey),
                   system: updateDocumentPrompt(currentContent),
                   prompt: description,
                   experimental_providerMetadata: {
@@ -638,7 +648,7 @@ export async function POST(request: Request) {
                 dataStream.writeData({ type: 'finish', content: '' });
               } else if (document.kind === 'code') {
                 const { fullStream } = streamObject({
-                  model: customModel(model.apiIdentifier),
+                  model: customModel(model.apiIdentifier, modelApiKey),
                   system: updateDocumentPrompt(currentContent),
                   prompt: description,
                   schema: z.object({
@@ -706,7 +716,7 @@ export async function POST(request: Request) {
               > = [];
 
               const { elementStream } = streamObject({
-                model: customModel(model.apiIdentifier),
+                model: customModel(model.apiIdentifier, modelApiKey),
                 system:
                   'You are a help writing assistant. Given a piece of writing, please offer suggestions to improve the piece of writing and describe the change. It is very important for the edits to contain full sentences instead of just words. Max 5 suggestions.',
                 prompt: document.content,
