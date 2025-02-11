@@ -22,7 +22,7 @@ By using this software, you agree to use it solely for learning purposes.
 - [Setup](#setup)
 - [Usage](#usage)
 - [Financial Data](#financial-data)
-- [Deploy Your Own](#deploy-your-own)
+- [Deploy Your Own Agent](#deploy-your-own-agent)
 
 ## Features 🌟
 - [AI Financial Agent](https://chat.financialdatasets.ai)
@@ -97,7 +97,7 @@ Data includes financial statements, stock prices, options data, insider trades, 
 
 If you do not want to use the Financial Datasets API, you can easily switch to another data provider by modifying a few lines of code.
 
-## Deploy Your Own 🚀
+## Deploy Your Own Agent 🚀
 
 You can deploy your own version of the AI Financial Agent in production via Vercel with one click:
 
