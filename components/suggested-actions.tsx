@@ -68,7 +68,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
                 try {
                   //  Check for API key
                   const localApiKey = getLocalOpenAIApiKey();
-                  console.log('localApiKey', localApiKey);
                   if (!localApiKey) {
                     setShowApiKeysModal(true);
                     return;
