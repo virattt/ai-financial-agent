@@ -74,12 +74,12 @@ LANGCHAIN_TRACING_V2=true
 LANGCHAIN_PROJECT=ai-financial-agent
 ```
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
+Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
-If you want to deploy your own version of the AI Financial Agent in production, you need to link your local instance with your Vercel and GitHub accounts.
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+> If you want to deploy your own version of the AI Financial Agent in production, you need to link your local instance with your Vercel and GitHub accounts.
+> 1. Install Vercel CLI: `npm i -g vercel`
+> 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
+> 3. Download your environment variables: `vercel env pull`
 
 ## Usage 🎮
 
