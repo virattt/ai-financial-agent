@@ -35,7 +35,7 @@ By using this software, you agree to use it solely for learning purposes.
   - 30+ years of financial data with 100% market coverage
   - Documentation available [here](https://docs.financialdatasets.ai)
 
-## Setup 🛠️
+## Setup 🚂
 
 ```bash
 git clone https://github.com/virattt/ai-financial-agent.git
