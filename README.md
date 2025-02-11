@@ -76,7 +76,7 @@ LANGCHAIN_PROJECT=ai-financial-agent
 
 **Important**: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
-## Usage 🎮
+## Usage 💻
 
 After completing the steps above, simply run the following command to start the development server:
 ```bash
