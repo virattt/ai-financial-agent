@@ -34,9 +34,6 @@ By using this software, you agree to use it solely for learning purposes.
   - Data is optimized for AI financial agents
   - 30+ years of financial data with 100% market coverage
   - Documentation available [here](https://docs.financialdatasets.ai)
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
 
 
 ## Setup 🛠️
