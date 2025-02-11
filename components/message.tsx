@@ -11,7 +11,6 @@ import { PencilEditIcon, SparklesIcon } from './icons';
 import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
-import { StockPrice } from './stock-price';
 import equal from 'fast-deep-equal';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -126,10 +125,8 @@ const PurePreviewMessage = ({
 
                     return (
                       <div key={toolCallId}>
-                        {toolName === 'getCurrentStockPrice' ? (
-                          <StockPrice stockData={result} />
-                        ) : toolName === 'getStockPrices' ? (
-                          <StockChart ticker={result.ticker} prices={result.prices} />
+                        {toolName === 'getStockPrices' ? (
+                          <StockChart ticker={result.ticker} result={result} />
                         ) : toolName === 'getIncomeStatements' ? (
                           <FinancialsTable
                             data={result.income_statements}

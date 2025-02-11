@@ -41,7 +41,6 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 type AllowedTools =
-  | 'getCurrentStockPrice'
   | 'getStockPrices'
   | 'getIncomeStatements'
   | 'getBalanceSheets'
@@ -50,7 +49,6 @@ type AllowedTools =
   | 'searchStocksByFilters';
 
 const financialDatasetsTools: AllowedTools[] = [
-  'getCurrentStockPrice',
   'getStockPrices',
   'getIncomeStatements',
   'getBalanceSheets',
@@ -240,29 +238,8 @@ export async function POST(request: Request) {
           }
         },
         tools: {
-          getCurrentStockPrice: {
-            description: 'Use this tool to get the current price snapshot of a stock only',
-            parameters: z.object({
-              ticker: z.string().describe('The ticker of the company to get the latest price for'),
-            }),
-            execute: async ({ ticker }) => {
-              if (!shouldExecuteToolCall('getCurrentStockPrice', { ticker })) {
-                console.log('Skipping duplicate getCurrentStockPrice call:', { ticker });
-                return null;
-              }
-
-              const response = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`, {
-                headers: {
-                  'X-API-Key': `${financialDatasetsApiKey}`
-                }
-              });
-
-              const data = await response.json();
-              return data;
-            },
-          },
           getStockPrices: {
-            description: 'Use this tool to get stock prices for a company over a time period',
+            description: 'Use this tool to get stock prices and market cap for a company.  This tool will return a snapshot of the current price, market cap, and the historical prices over a given time period.',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get historical prices for'),
               start_date: z.string().describe('The start date for historical prices (YYYY-MM-DD)'),
@@ -276,6 +253,23 @@ export async function POST(request: Request) {
                 return null;
               }
 
+              // First, get snapshot price
+              const snapshotResponse = await fetch(`https://api.financialdatasets.ai/prices/snapshot?ticker=${ticker}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
+              const snapshotData = await snapshotResponse.json();
+
+              // If end_date is not provided, set it to the current date (YYYY-MM-DD)
+              // And set start_date to 1 month ago
+              // Also do the same if end_date and start_date are the same
+              if (!end_date || !start_date || end_date === start_date) {
+                end_date = new Date().toISOString().split('T')[0];
+                start_date = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0];
+              }
+
+              // Then, get historical prices
               const urlParams = new URLSearchParams({
                 ticker: ticker,
                 start_date: start_date,
@@ -283,13 +277,21 @@ export async function POST(request: Request) {
                 interval: interval,
                 interval_multiplier: interval_multiplier.toString(),
               });
-              const response = await fetch(`https://api.financialdatasets.ai/prices/?${urlParams}`, {
+              
+              const historicalPricesResponse = await fetch(`https://api.financialdatasets.ai/prices/?${urlParams}`, {
                 headers: {
                   'X-API-Key': `${financialDatasetsApiKey}`
                 }
               });
-              const data = await response.json();
-              return data;
+              const historicalPricesData = await historicalPricesResponse.json();
+
+              // Combine snapshot price with historical prices
+              const combinedData = {
+                ticker: ticker,
+                snapshot: snapshotData,
+                historical: historicalPricesData
+              };
+              return combinedData;
             },
           },
           getIncomeStatements: {

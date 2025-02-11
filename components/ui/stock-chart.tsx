@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis
 } from "recharts";
-import { DarkCharcoal, Gray, Green, Pink, White, Blue } from "@/components/styles/colors";
+import { Gray, Green, Pink, Blue } from "@/components/styles/colors";
 import {
   Accordion,
   AccordionContent,
@@ -18,9 +18,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faCaretUp, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
-export interface PriceData {
+export interface Price {
   open: number;
   close: number;
   high: number;
@@ -29,9 +29,34 @@ export interface PriceData {
   time: string;
 }
 
-export interface StockChartProps {
+export interface Snapshot {
   ticker: string;
-  prices: PriceData[];
+  price: number;
+  day_change: number;
+  day_change_percent: number;
+  market_cap: number;
+  volume: number;
+  time: string;
+}
+
+export interface HistoricalResult {
+  ticker: string;
+  prices: Price[];
+}
+
+export interface SnapshotResult {
+  snapshot: Snapshot;
+}
+
+export interface StockPriceResult {
+  ticker: string;
+  snapshot: SnapshotResult;
+  historical: HistoricalResult;
+}
+
+export interface StockChartProps {
+  result: StockPriceResult;
+  ticker: string;
 }
 
 export function StockChart(props: StockChartProps) {
@@ -52,9 +77,13 @@ export function StockChart(props: StockChartProps) {
           </AccordionTrigger>
           <AccordionContent>
             <div className="flex flex-col gap-4 rounded-md p-4 bg-background max-w-[750px]">
-              <ChartHeader ticker={props.ticker} prices={props.prices} />
+              <ChartHeader
+                ticker={props.ticker}
+                prices={props.result.historical.prices}
+                snapshot={props.result.snapshot.snapshot}
+              />
               <Chart
-                data={props.prices.map((price) => {
+                data={props.result.historical.prices.map((price) => {
                   return ({
                     date: formatDate(price.time),
                     value: price.close,
@@ -180,42 +209,83 @@ export const getDomainBuffer = (maxValue: number) => {
 
 interface ChartHeaderProps {
   ticker: string,
-  prices: PriceData[],
+  prices: Price[],
+  snapshot: Snapshot,
+}
+
+function formatLargeNumber(num: number): string {
+  const trillion = 1000000000000;
+  const billion = 1000000000;
+  const million = 1000000;
+  const thousand = 1000;
+
+  if (num >= trillion) {
+    return `${(num / trillion).toFixed(2)}T`;
+  } else if (num >= billion) {
+    return `${(num / billion).toFixed(2)}B`;
+  } else if (num >= million) {
+    return `${(num / million).toFixed(2)}M`;
+  } else if (num >= thousand) {
+    return `${(num / thousand).toFixed(2)}k`;
+  }
+  return num.toString();
 }
 
 function ChartHeader({
-  ticker, prices,
+  ticker, prices, snapshot
 }: ChartHeaderProps) {
   // Compute percent and dollar difference between end price and start price
   const startPrice = prices[0].close;
   const endPrice = prices[prices.length - 1].close;
-  const percentDifference = ((endPrice - startPrice) / startPrice) * 100;
-  const dollarDifference = endPrice - startPrice;
+  const dayChange = snapshot.day_change;
+  const dayChangePercent = snapshot.day_change_percent;
+  const volume = snapshot.volume;
+  const marketCap = snapshot.market_cap;
 
   return (
     <div className="ml-4">
       <div className="text-2xl">
         {ticker}
       </div>
-      <div className="text-xl font-bold mb-1">
+      <div className="text-3xl font-bold mb-1">
         ${prices[prices.length - 1].close.toFixed(2)}
       </div>
-      <div className="text-sm font-bold flex">
+      <div className="text-sm flex">
         <div className="mr-2">
-          {dollarDifference > 0 ? (
-            <span style={{ color: Green }}>+${dollarDifference.toFixed(2)}</span>
+          {dayChange > 0 ? (
+            <span style={{ color: Green }}>+${dayChange.toFixed(2)}</span>
           ) : (
-            <span style={{ color: Pink }}>-${Math.abs(dollarDifference).toFixed(2)}</span>
+            <span style={{ color: Pink }}>-${Math.abs(dayChange).toFixed(2)}</span>
           )}
         </div>
         <div>
-          {percentDifference > 0 ? (
-            <span style={{ color: Green }}>(+{percentDifference.toFixed(2)}%)</span>
+          {dayChangePercent > 0 ? (
+            <span style={{ color: Green }}>(+{dayChangePercent.toFixed(2)}%)</span>
           ) : (
-            <span style={{ color: Pink }}>({percentDifference.toFixed(2)}%)</span>
+            <span style={{ color: Pink }}>({dayChangePercent.toFixed(2)}%)</span>
+          )}
+        </div>
+        <div className="ml-2 flex items-center">
+          {dayChangePercent > 0 ? (
+            <span style={{ color: Green }}>
+              <FontAwesomeIcon icon={faCaretUp} className="mr-1" />
+              Today
+            </span>
+          ) : (
+            <span style={{ color: Pink }}>
+              <FontAwesomeIcon icon={faCaretDown} className="mr-1" />
+              Today
+            </span>
           )}
         </div>
       </div>
+      <div>
+        <span className="text-muted-foreground text-xs">Mkt Cap: ${formatLargeNumber(marketCap)}</span>
+      </div>
+      <div>
+        <span className="text-muted-foreground text-xs">Vol: {formatLargeNumber(volume)}</span>
+      </div>
+
     </div>
   );
 };
