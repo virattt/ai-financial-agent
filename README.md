@@ -25,16 +25,15 @@ By using this software, you agree to use it solely for learning purposes.
 - [Deploy Your Own](#deploy-your-own)
 
 ## Features 🌟
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports OpenAI (default), Anthropic, Cohere, and other model providers
+- [AI Financial Agent](https://chat.financialdatasets.ai)
+  - Productized version of this project
+  - Chat assistant for financial research, stock analysis, and more
+  - Uses generative UI to display stock prices, fundamentals, and more
 - [Financial Datasets API](https://financialdatasets.ai)
   - Access to real-time and historical stock market data
   - Data is optimized for AI financial agents
   - 30+ years of financial data with 100% market coverage
   - Documentation available [here](https://docs.financialdatasets.ai)
-
 
 ## Setup 🛠️
 
