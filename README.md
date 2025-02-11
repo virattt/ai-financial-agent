@@ -20,8 +20,8 @@ By using this software, you agree to use it solely for learning purposes.
 ## Table of Contents 📖
 - [Features](#features)
 - [Setup](#setup)
-- [Usage](#usage)
-- [Financial Data](#financial-data)
+- [Run the Agent](#run-the-agent)
+- [Financial Data API](#financial-data-api)
 - [Deploy Your Own Agent](#deploy-your-own-agent)
 
 ## Features 🌟
@@ -76,7 +76,7 @@ LANGCHAIN_PROJECT=ai-financial-agent
 
 **Important**: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
-## Usage 💻
+## Run the Agent 🤖
 
 After completing the steps above, simply run the following command to start the development server:
 ```bash
@@ -85,7 +85,7 @@ pnpm dev
 
 Your app template should now be running on [localhost:3000](http://localhost:3000/).
 
-## Financial Data
+## Financial Data API 📊
 
 This template uses the [Financial Datasets API](https://financialdatasets.ai) as the financial data provider.  The Financial Datasets API is specifically designed for AI financial agents and LLMs.
 
