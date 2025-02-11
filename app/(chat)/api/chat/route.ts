@@ -35,7 +35,6 @@ import {
 import { generateTitleFromUserMessage } from '../../actions';
 import { AISDKExporter } from 'langsmith/vercel';
 import { validStockSearchFilters } from '@/lib/api/stock-filters';
-import { openai } from '@ai-sdk/openai';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -131,7 +130,7 @@ export async function POST(request: Request) {
       });
 
       const { object } = await generateObject({
-        model: openai('gpt-4o-mini'),
+        model: customModel('gpt-4o-mini'),
         output: 'array',
         schema: z.object({
           task_name: z.string(),
