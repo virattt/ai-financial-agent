@@ -24,7 +24,7 @@ By using this software, you agree to use it solely for learning purposes.
 - [Financial Data API](#financial-data-api)
 - [Deploy Your Own Agent](#deploy-your-own-agent)
 
-## Features 🌟
+## Features
 - [AI Financial Agent](https://chat.financialdatasets.ai)
   - Productized version of this project
   - Chat assistant for financial research, stock analysis, and more
@@ -35,7 +35,7 @@ By using this software, you agree to use it solely for learning purposes.
   - 30+ years of financial data with 100% market coverage
   - Documentation available [here](https://docs.financialdatasets.ai)
 
-## Setup 🚂
+## Setup
 
 ```bash
 git clone https://github.com/virattt/ai-financial-agent.git
@@ -76,7 +76,7 @@ LANGCHAIN_PROJECT=ai-financial-agent
 
 **Important**: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various OpenAI and authentication provider accounts.
 
-## Run the Agent 🤖
+## Run the Agent
 
 After completing the steps above, simply run the following command to start the development server:
 ```bash
@@ -85,7 +85,7 @@ pnpm dev
 
 Your app template should now be running on [localhost:3000](http://localhost:3000/).
 
-## Financial Data API 📊
+## Financial Data API
 
 This template uses the [Financial Datasets API](https://financialdatasets.ai) as the financial data provider.  The Financial Datasets API is specifically designed for AI financial agents and LLMs.
 
@@ -97,7 +97,7 @@ Data includes financial statements, stock prices, options data, insider trades, 
 
 If you do not want to use the Financial Datasets API, you can easily switch to another data provider by modifying a few lines of code.
 
-## Deploy Your Own Agent 🚀
+## Deploy Your Own Agent
 
 You can deploy your own version of the AI Financial Agent in production via Vercel with one click:
 
