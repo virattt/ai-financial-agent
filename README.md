@@ -1,6 +1,23 @@
 # AI Financial Agent 🤖
 This is a proof of conncept AI financial agent.  The goal of this project is to explore the use of AI for investment research.  This project is for **educational** purposes only and is not intended for real trading or investment.
 
+1. Features
+
+✅ Stock Data Analysis – Fetches and analyzes stock market data.
+✅ News Sentiment Analysis – Uses NLP to analyze news sentiment.
+✅ Risk Assessment – Assesses investment risks based on historical data.
+✅ Predictive Modeling – Applies machine learning models for trend prediction.
+✅ Portfolio Optimization – Suggests diversified portfolios based on user preferences.
+
+2. Tech Stack
+Technologies, frameworks, and libraries used:
+
+✅ Programming Language: Python
+✅ Libraries: Pandas, NumPy, Scikit-Learn, XGBoost
+✅ NLP Models: OpenAI API, VADER Sentiment Analysis
+✅ Data Sources: Yahoo Finance API, Alpha Vantage, News APIs
+✅ Visualization: Matplotlib, Seaborn, Plotly
+
 👋 **Demo**: You can use a live demo of this project [here](https://chat.financialdatasets.ai/).
 
 <img width="1709" alt="Screenshot 2025-01-06 at 5 53 59 PM" src="https://github.com/user-attachments/assets/7ef1729b-f2e1-477c-99e2-1184c1bfa1cd" />
