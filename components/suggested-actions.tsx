@@ -27,11 +27,11 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       action: 'What is the current price of Apple?',
     },
     {
-      title: 'Show me the revenue',
-      label: 'of Microsoft over the last 5 years',
-      mobileTitle: 'MSFT revenue',
-      mobileLabel: 'for the last 5y',
-      action: 'Show Microsoft\'s annual revenue for the last 5 years',
+      title: 'What is the latest news',
+      label: 'for Microsoft?',
+      mobileTitle: 'Latest news',
+      mobileLabel: 'for MSFT',
+      action: 'What is the latest news for Microsoft in the last 5 days?',
     },
     {
       title: 'How has Nvidia\'s price',

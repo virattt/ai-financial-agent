@@ -3,7 +3,6 @@ import {
   convertToCoreMessages,
   createDataStreamResponse,
   generateObject,
-  streamObject,
   streamText,
 } from 'ai';
 import { z } from 'zod';
@@ -12,20 +11,14 @@ import { auth } from '@/app/(auth)/auth';
 import { customModel } from '@/lib/ai';
 import { models } from '@/lib/ai/models';
 import {
-  codePrompt,
   systemPrompt,
-  updateDocumentPrompt,
 } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
-  getDocumentById,
   saveChat,
-  saveDocument,
   saveMessages,
-  saveSuggestions,
 } from '@/lib/db/queries';
-import type { Suggestion } from '@/lib/db/schema';
 import {
   generateUUID,
   getMostRecentUserMessage,
@@ -39,24 +32,19 @@ import { validStockSearchFilters } from '@/lib/api/stock-filters';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-type AllowedTools =
-  | 'getStockPrices'
-  | 'getIncomeStatements'
-  | 'getBalanceSheets'
-  | 'getCashFlowStatements'
-  | 'getFinancialMetrics'
-  | 'searchStocksByFilters';
-
-const financialDatasetsTools: AllowedTools[] = [
+const financialTools = [
   'getStockPrices',
   'getIncomeStatements',
   'getBalanceSheets',
   'getCashFlowStatements',
   'getFinancialMetrics',
   'searchStocksByFilters',
-];
+  'getNews',
+] as const;
 
-const allTools: AllowedTools[] = [...financialDatasetsTools];
+type AllowedTools = typeof financialTools[number];
+
+const allTools: AllowedTools[] = [...financialTools];
 
 export async function POST(request: Request) {
   const {
@@ -247,6 +235,21 @@ export async function POST(request: Request) {
           }
         },
         tools: {
+          getNews: {
+            description: 'Use this tool to get news and latest events for a company.  This tool will return a list of news articles and events for a company.',
+            parameters: z.object({
+              ticker: z.string().describe('The ticker of the company to get news for'),
+            }),
+            execute: async ({ ticker }) => {
+              const response = await fetch(`https://api.financialdatasets.ai/news/?ticker=${ticker}`, {
+                headers: {
+                  'X-API-Key': `${financialDatasetsApiKey}`
+                }
+              });
+              const data = await response.json();
+              return data;
+            },
+          },
           getStockPrices: {
             description: 'Use this tool to get stock prices and market cap for a company.  This tool will return a snapshot of the current price, market cap, and the historical prices over a given time period.',
             parameters: z.object({

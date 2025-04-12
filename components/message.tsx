@@ -19,6 +19,7 @@ import { MessageEditor } from './message-editor';
 import { FinancialsTable } from './financials-table';
 import { StockChart } from './ui/stock-chart';
 import { StockScreenerTable } from './stock-screener-table';
+import { Box } from 'lucide-react';
 
 const PurePreviewMessage = ({
   chatId,
@@ -127,33 +128,35 @@ const PurePreviewMessage = ({
                       <div key={toolCallId}>
                         {toolName === 'getStockPrices' ? (
                           <StockChart ticker={result.ticker} result={result} />
+                        ) : toolName === 'getNews' ? (
+                          <div />
                         ) : toolName === 'getIncomeStatements' ? (
                           <FinancialsTable
                             data={result.income_statements}
                             title="Income Statements"
-                          />
-                        ) : toolName === 'getBalanceSheets' ? (
-                          <FinancialsTable
-                            data={result.balance_sheets}
-                            title="Balance Sheets"
-                          />
-                        ) : toolName === 'getCashFlowStatements' ? (
-                          <FinancialsTable
-                            data={result.cash_flow_statements}
-                            title="Cash Flow Statements"
-                          />
-                        ) : toolName === 'getFinancialMetrics' ? (
-                          <FinancialsTable
-                            data={result.financial_metrics}
-                            title="Financial Metrics"
-                          />
-                        ) : toolName === 'searchStocksByFilters' ? (
-                          <StockScreenerTable
-                            data={result.search_results}
-                          />
-                        ) : (
-                          <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
-                        )}
+                            />
+                          ) : toolName === 'getBalanceSheets' ? (
+                            <FinancialsTable
+                              data={result.balance_sheets}
+                              title="Balance Sheets"
+                            />
+                          ) : toolName === 'getCashFlowStatements' ? (
+                            <FinancialsTable
+                              data={result.cash_flow_statements}
+                              title="Cash Flow Statements"
+                            />
+                          ) : toolName === 'getFinancialMetrics' ? (
+                            <FinancialsTable
+                              data={result.financial_metrics}
+                              title="Financial Metrics"
+                            />
+                          ) : toolName === 'searchStocksByFilters' ? (
+                            <StockScreenerTable
+                              data={result.search_results}
+                            />
+                          ) : (
+                            <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
+                          )}
                       </div>
                     );
                   }
