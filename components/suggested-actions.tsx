@@ -35,10 +35,10 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     },
     {
       title: 'How has Nvidia\'s price',
-      label: 'changed over the past year?',
+      label: 'changed year to date?',
       mobileTitle: 'Price history',
-      mobileLabel: 'of NVDA over the last year',
-      action: 'How has Nvidia\'s price changed over the past year?',
+      mobileLabel: 'of NVDA year to date',
+      action: 'How has Nvidia\'s price changed year to date?',
     },
     {
       title: 'Show me 5 stocks with',
