@@ -128,7 +128,7 @@ export async function POST(request: Request) {
       });
 
       const { object } = await generateObject({
-        model: customModel('gpt-4o-mini', modelApiKey),
+        model: customModel('gpt-4.1-mini-2025-04-14', modelApiKey),
         output: 'array',
         schema: z.object({
           task_name: z.string(),
