@@ -37,11 +37,11 @@ function PureMessages({
 
   const loadingMessages = queryLoadingState.taskNames.length > 0
     ? queryLoadingState.taskNames
-    : ["Searching..."];
+    : [];
 
   return (
     <div
-      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
+      className="flex flex-col min-w-0 gap-4 flex-1 overflow-y-scroll mt-6"
     >
       {messages.map((message, index) => (
         <PreviewMessage
@@ -60,9 +60,11 @@ function PureMessages({
         />
       ))}
 
-      {isLoading &&
+      {(isLoading || queryLoadingState.isLoading) &&
         messages.length > 0 &&
-        messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+        messages[messages.length - 1].role === 'user' && (
+          <ThinkingMessage />
+        )}
 
       {queryLoadingState.isLoading && (
         <LoadingMessage loadingMessages={loadingMessages} />
