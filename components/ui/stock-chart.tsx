@@ -50,8 +50,8 @@ export interface SnapshotResult {
 
 export interface StockPriceResult {
   ticker: string;
-  snapshot: SnapshotResult;
-  historical: HistoricalResult;
+  snapshot: SnapshotResult | null;
+  historical: HistoricalResult | null;
 }
 
 export interface StockChartProps {
@@ -79,16 +79,14 @@ export function StockChart(props: StockChartProps) {
             <div className="flex flex-col gap-4 rounded-md p-4 bg-background max-w-[750px]">
               <ChartHeader
                 ticker={props.ticker}
-                prices={props.result.historical.prices}
-                snapshot={props.result.snapshot.snapshot}
+                prices={props.result.historical?.prices || []}
+                snapshot={props.result.snapshot?.snapshot || null}
               />
               <Chart
-                data={props.result.historical.prices.map((price) => {
-                  return ({
-                    date: formatDate(price.time),
-                    value: price.close,
-                  });
-                })}
+                data={props.result.historical?.prices?.map((price) => ({
+                  date: formatDate(price.time),
+                  value: price.close,
+                })) || []}
               />
             </div>
           </AccordionContent>
@@ -210,7 +208,7 @@ export const getDomainBuffer = (maxValue: number) => {
 interface ChartHeaderProps {
   ticker: string,
   prices: Price[],
-  snapshot: Snapshot,
+  snapshot: Snapshot | null,
 }
 
 function formatLargeNumber(num: number): string {
@@ -234,13 +232,20 @@ function formatLargeNumber(num: number): string {
 function ChartHeader({
   ticker, prices, snapshot
 }: ChartHeaderProps) {
-  // Compute percent and dollar difference between end price and start price
-  const startPrice = prices[0].close;
-  const endPrice = prices[prices.length - 1].close;
-  const dayChange = snapshot.day_change;
-  const dayChangePercent = snapshot.day_change_percent;
-  const volume = snapshot.volume;
-  const marketCap = snapshot.market_cap;
+  // Return null only if both prices and snapshot are missing
+  if ((!prices || prices.length === 0) && !snapshot) {
+    return null;
+  }
+
+  // Default values in case snapshot is null
+  const dayChange = snapshot?.day_change ?? 0;
+  const dayChangePercent = snapshot?.day_change_percent ?? 0;
+  const volume = snapshot?.volume ?? 0;
+  const marketCap = snapshot?.market_cap ?? 0;
+  
+  // Get current price from either snapshot or last price in prices array
+  const currentPrice = snapshot?.price ?? 
+    (prices && prices.length > 0 ? prices[prices.length - 1].close : 0);
 
   return (
     <div className="ml-4">
@@ -248,7 +253,7 @@ function ChartHeader({
         {ticker}
       </div>
       <div className="text-3xl font-bold mb-1">
-        ${prices[prices.length - 1].close.toFixed(2)}
+        ${currentPrice.toFixed(2)}
       </div>
       <div className="text-sm flex">
         <div className="mr-2">
@@ -282,10 +287,6 @@ function ChartHeader({
       <div>
         <span className="text-muted-foreground text-xs">Mkt Cap: ${formatLargeNumber(marketCap)}</span>
       </div>
-      <div>
-        <span className="text-muted-foreground text-xs">Vol: {formatLargeNumber(volume)}</span>
-      </div>
-
     </div>
   );
 };
