@@ -134,29 +134,29 @@ const PurePreviewMessage = ({
                           <FinancialsTable
                             data={result.income_statements}
                             title="Income Statements"
-                            />
-                          ) : toolName === 'getBalanceSheets' ? (
-                            <FinancialsTable
-                              data={result.balance_sheets}
-                              title="Balance Sheets"
-                            />
-                          ) : toolName === 'getCashFlowStatements' ? (
-                            <FinancialsTable
-                              data={result.cash_flow_statements}
-                              title="Cash Flow Statements"
-                            />
-                          ) : toolName === 'getFinancialMetrics' ? (
-                            <FinancialsTable
-                              data={result.financial_metrics}
-                              title="Financial Metrics"
-                            />
-                          ) : toolName === 'searchStocksByFilters' ? (
-                            <StockScreenerTable
-                              data={result.search_results}
-                            />
-                          ) : (
-                            <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
-                          )}
+                          />
+                        ) : toolName === 'getBalanceSheets' ? (
+                          <FinancialsTable
+                            data={result.balance_sheets}
+                            title="Balance Sheets"
+                          />
+                        ) : toolName === 'getCashFlowStatements' ? (
+                          <FinancialsTable
+                            data={result.cash_flow_statements}
+                            title="Cash Flow Statements"
+                          />
+                        ) : toolName === 'getFinancialMetrics' ? (
+                          <FinancialsTable
+                            data={result.financial_metrics}
+                            title="Financial Metrics"
+                          />
+                        ) : toolName === 'searchStocksByFilters' ? (
+                          <StockScreenerTable
+                            data={result.search_results}
+                          />
+                        ) : (
+                          <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
+                        )}
                       </div>
                     );
                   }
@@ -206,28 +206,14 @@ export const ThinkingMessage = () => {
 
   return (
     <motion.div
-      className="w-full mx-auto max-w-3xl px-4 group/message "
+      className="w-full mx-auto max-w-3xl px-4"
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}
     >
-      <div
-        className={cx(
-          'flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl',
-          {
-            'group-data-[role=user]/message:bg-muted': true,
-          },
-        )}
-      >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
-          <SparklesIcon size={14} />
-        </div>
-
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground text-sm">
-            Thinking...
-          </div>
-        </div>
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent text-[#9FA2A5] align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+        <span className="text-sm text-foreground text-[#9FA2A5]">Researching</span>
       </div>
     </motion.div>
   );
@@ -255,8 +241,8 @@ export const LoadingMessage = ({ loadingMessages }: { loadingMessages: string[] 
           <div className="flex flex-col gap-4 text-muted-foreground">
             {loadingMessages.map((message, index) => (
               <div key={index} className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent text-[#2383F4] align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-                <span className="text-sm text-foreground">{message}</span>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent text-[#9FA2A5] align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+                <span className="text-sm text-foreground text-[#9FA2A5]">{message}</span>
               </div>
             ))}
           </div>
