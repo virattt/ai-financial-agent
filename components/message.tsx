@@ -213,7 +213,7 @@ export const ThinkingMessage = () => {
     >
       <div className="flex items-center gap-2">
         <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent text-[#9FA2A5] align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-        <span className="text-sm text-foreground text-[#9FA2A5]">Researching</span>
+        <span className="text-sm text-[#9FA2A5]">Researching</span>
       </div>
     </motion.div>
   );
@@ -242,7 +242,7 @@ export const LoadingMessage = ({ loadingMessages }: { loadingMessages: string[] 
             {loadingMessages.map((message, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent text-[#9FA2A5] align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-                <span className="text-sm text-foreground text-[#9FA2A5]">{message}</span>
+                <span className="text-sm text-[#9FA2A5]">{message}</span>
               </div>
             ))}
           </div>
