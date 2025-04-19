@@ -123,7 +123,7 @@ export async function POST(request: Request) {
         type: 'query-loading',
         content: {
           isLoading: true,
-          taskNames: ['Analyzing your query...']
+          taskNames: []
         }
       });
 
@@ -254,8 +254,14 @@ export async function POST(request: Request) {
             description: 'Use this tool to get stock prices and market cap for a company.  This tool will return a snapshot of the current price, market cap, and the historical prices over a given time period.',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get historical prices for'),
-              start_date: z.string().describe('The start date for historical prices (YYYY-MM-DD)'),
-              end_date: z.string().describe('The end date for historical prices (YYYY-MM-DD)'),
+              start_date: z.string().optional().describe('The start date for historical prices (YYYY-MM-DD)').default(() => {
+                const date = new Date();
+                date.setMonth(date.getMonth() - 1);
+                return date.toISOString().split('T')[0];
+              }),
+              end_date: z.string().optional().describe('The end date for historical prices (YYYY-MM-DD)').default(() => {
+                return new Date().toISOString().split('T')[0];
+              }),
               interval: z.enum(['second', 'minute', 'day', 'week', 'month', 'year']).default('day').describe('The interval between price points (e.g. second, minute, day, week, month, year)'),
               interval_multiplier: z.number().default(1).describe('The multiplier for the interval (e.g. 1 for second, 60 for minute, 1 for day, 7 for week, 1 for month, 1 for year)'),
             }),
@@ -272,14 +278,6 @@ export async function POST(request: Request) {
                 }
               });
               const snapshotData = await snapshotResponse.json();
-
-              // If end_date is not provided, set it to the current date (YYYY-MM-DD)
-              // And set start_date to 1 month ago
-              // Also do the same if end_date and start_date are the same
-              if (!end_date || !start_date || end_date === start_date) {
-                end_date = new Date().toISOString().split('T')[0];
-                start_date = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0];
-              }
 
               // Then, get historical prices
               const urlParams = new URLSearchParams({
