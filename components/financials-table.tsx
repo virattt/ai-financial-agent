@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/accordion";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { Blue } from './styles/colors';
 
 interface FinancialData {
   [key: string]: any;
@@ -92,7 +91,6 @@ export function FinancialsTable({
             <FontAwesomeIcon
                 icon={faCheckCircle}
                 size={'sm'}
-                color={Blue}
               />
               <span className="text-sm">Retrieved data:</span>{" "}
               <span className="text-muted-foreground text-sm">{headerTitle}</span>

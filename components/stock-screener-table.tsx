@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/accordion";
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Blue } from './styles/colors';
 
 interface StockScreenerResult {
   ticker: string;
@@ -126,7 +125,6 @@ export function StockScreenerTable({
             <FontAwesomeIcon
                 icon={faCheckCircle}
                 size={'sm'}
-                color={Blue}
               />
               <span className="text-sm">Retrieved data:</span>{" "}
               <span className="text-muted-foreground text-sm">Search Results</span>

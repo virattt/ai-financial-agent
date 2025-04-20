@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis
 } from "recharts";
-import { Gray, Green, Pink, Blue } from "@/components/styles/colors";
+import { Gray, Green, Pink } from "@/components/styles/colors";
 import {
   Accordion,
   AccordionContent,
@@ -69,7 +69,6 @@ export function StockChart(props: StockChartProps) {
               <FontAwesomeIcon
                 icon={faCheckCircle}
                 size={'sm'}
-                color={Blue}
               />
               <span className="text-sm">Retrieved data:</span>{" "}
               <span className="text-muted-foreground text-sm">{props.ticker} (Prices)</span>
