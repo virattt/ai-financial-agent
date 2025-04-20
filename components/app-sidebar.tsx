@@ -38,7 +38,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               }}
               className="flex flex-row gap-3 items-center"
             >
-            <span className="bg-clip-text text-xl font-bold px-2 text-transparent bg-gradient-to-r from-[#2383F4] to-[#8F00FF]">
+            <span className="bg-clip-text text-xl font-bold px-2 text-primary">
               financial datasets
             </span>
             </Link>
