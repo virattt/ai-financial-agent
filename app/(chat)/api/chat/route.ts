@@ -144,7 +144,7 @@ export async function POST(request: Request) {
         Your task breakdown should:
         - Be comprehensive and cover all aspects needed to fully answer the query
         - Follow a logical research sequence from basic information to deeper analysis
-        - Include 2-4 tasks maximum - fewer is better as long as they cover the complete question
+        - Include 1-3 tasks maximum - fewer is better as long as they cover the complete question
         - Prioritize the most essential research steps and consolidate similar actions
         - Start with gathering fundamental data before moving to analysis and comparison
         - Make thought processes transparent to users who will see these tasks
@@ -252,12 +252,13 @@ export async function POST(request: Request) {
         },
         tools: {
           getNews: {
-            description: 'Use this tool to get news and latest events for a company.  This tool will return a list of news articles and events for a company.',
+            description: 'Use this tool to get news and latest events for a company.  This tool will return a list of news articles and events for a company.  When using this tool, include dates in your output.',
             parameters: z.object({
               ticker: z.string().describe('The ticker of the company to get news for'),
+              limit: z.number().optional().default(5).describe('The number of news articles to return'),
             }),
-            execute: async ({ ticker }) => {
-              const response = await fetch(`https://api.financialdatasets.ai/news/?ticker=${ticker}`, {
+            execute: async ({ ticker, limit }) => {
+              const response = await fetch(`https://api.financialdatasets.ai/news/?ticker=${ticker}&limit=${limit}`, {
                 headers: {
                   'X-API-Key': `${financialDatasetsApiKey}`
                 }

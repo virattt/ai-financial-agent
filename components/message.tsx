@@ -20,6 +20,7 @@ import { FinancialsTable } from './financials-table';
 import { StockChart } from './ui/stock-chart';
 import { StockScreenerTable } from './stock-screener-table';
 import { Box } from 'lucide-react';
+import { News } from './ui/news';
 
 const PurePreviewMessage = ({
   chatId,
@@ -129,7 +130,7 @@ const PurePreviewMessage = ({
                         {toolName === 'getStockPrices' ? (
                           <StockChart ticker={result.ticker} result={result} />
                         ) : toolName === 'getNews' ? (
-                          <div />
+                          <News data={result} />
                         ) : toolName === 'getIncomeStatements' ? (
                           <FinancialsTable
                             data={result.income_statements}
@@ -155,7 +156,7 @@ const PurePreviewMessage = ({
                             data={result.search_results}
                           />
                         ) : (
-                          <pre>{JSON.stringify("Data fetched", null, 2)}</pre>
+                          <div />
                         )}
                       </div>
                     );
