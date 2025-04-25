@@ -28,10 +28,10 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     },
     {
       title: 'What is the latest news',
-      label: 'for Microsoft?',
+      label: 'for Tesla?',
       mobileTitle: 'Latest news',
-      mobileLabel: 'for MSFT',
-      action: 'What is the latest news for Microsoft in the last 5 days?',
+      mobileLabel: 'for TSLA',
+      action: 'What is the latest news for Tesla?',
     },
     {
       title: 'How has Nvidia\'s price',
