@@ -60,7 +60,7 @@ export function News({ data }: NewsProps) {
   };
 
   const formatNewsDate = (dateString: string) => {
-    return format(new Date(dateString), 'MMM d, yyyy');
+    return format(new Date(dateString), 'MMM d, yyyy • h:mm a');
   };
 
   return (
