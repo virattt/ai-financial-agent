@@ -64,14 +64,13 @@ export function StockChart(props: StockChartProps) {
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="stock-chart" className="border-none">
         <div className="border rounded-lg">
-          <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+          <AccordionTrigger className="w-full px-4 py-2 hover:no-underline hover:bg-muted rounded-t-lg">
             <span className="flex flex-row items-center gap-2">
               <FontAwesomeIcon
                 icon={faCheckCircle}
                 size={'sm'}
                 color={Green}
               />
-              <span className="text-sm">Retrieved data:</span>{" "}
               <span className="text-muted-foreground text-sm">{props.ticker} (Prices)</span>
             </span>
           </AccordionTrigger>

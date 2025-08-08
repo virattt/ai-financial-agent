@@ -19,10 +19,16 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Blue, ElectricViolet, Green } from './styles/colors';
+import { IncomeStatementsTable } from './income-statements-table';
+import { BalanceSheetsTable } from './balance-sheets-table';
+import { CashFlowStatementsTable } from './cash-flow-statements-table';
+import { FinancialMetricsTable } from './financial-metrics-table';
 
 interface FinancialData {
   [key: string]: any;
+  ticker?: string;
   report_period: string;
+  period?: string;
 }
 
 interface FinancialsTableProps {
@@ -37,6 +43,104 @@ export function FinancialsTable({
   title
 }: FinancialsTableProps) {
   if (!data || data.length === 0) return null;
+
+  // Check if this is income statement data by looking for key income statement fields
+  const isIncomeStatementData = (data: FinancialData[]) => {
+    const incomeStatementFields = [
+      'revenue',
+      'cost_of_revenue', 
+      'gross_profit',
+      'operating_income',
+      'net_income'
+    ];
+    
+    // If the data has at least 3 of the key income statement fields, treat it as income statement data
+    const foundFields = incomeStatementFields.filter(field => 
+      data.some(period => period[field] != null)
+    );
+    
+    return foundFields.length >= 3;
+  };
+
+  // Check if this is balance sheet data by looking for key balance sheet fields
+  const isBalanceSheetData = (data: FinancialData[]) => {
+    const balanceSheetFields = [
+      'total_assets',
+      'current_assets',
+      'total_liabilities',
+      'current_liabilities',
+      'shareholders_equity'
+    ];
+    
+    // If the data has at least 3 of the key balance sheet fields, treat it as balance sheet data
+    const foundFields = balanceSheetFields.filter(field => 
+      data.some(period => period[field] != null)
+    );
+    
+    return foundFields.length >= 3;
+  };
+
+  // Check if this is cash flow statement data by looking for key cash flow fields
+  const isCashFlowStatementData = (data: FinancialData[]) => {
+    const cashFlowFields = [
+      'net_cash_flow_from_operations',
+      'net_cash_flow_from_investing',
+      'net_cash_flow_from_financing',
+      'change_in_cash_and_equivalents',
+      'ending_cash_balance'
+    ];
+    
+    // If the data has at least 3 of the key cash flow fields, treat it as cash flow statement data
+    const foundFields = cashFlowFields.filter(field => 
+      data.some(period => period[field] != null)
+    );
+    
+    return foundFields.length >= 3;
+  };
+
+  // Check if this is financial metrics data by looking for key metrics fields
+  const isFinancialMetricsData = (data: FinancialData[]) => {
+    const financialMetricsFields = [
+      'market_cap',
+      'price_to_earnings_ratio',
+      'gross_margin',
+      'current_ratio',
+      'debt_to_equity',
+      'revenue_growth'
+    ];
+    
+    // If the data has at least 3 of the key financial metrics fields, treat it as financial metrics data
+    const foundFields = financialMetricsFields.filter(field => 
+      data.some(period => period[field] != null)
+    );
+    
+    return foundFields.length >= 3;
+  };
+
+  // Check if the data has required properties for specialized components
+  const hasRequiredProperties = (data: FinancialData[]) => {
+    return data.length > 0 && data[0].ticker && data[0].period;
+  };
+
+  // If this is income statement data and has required properties, use the specialized component
+  if (isIncomeStatementData(data) && hasRequiredProperties(data)) {
+    return <IncomeStatementsTable data={data as any} title={title} />;
+  }
+
+  // If this is balance sheet data and has required properties, use the specialized component
+  if (isBalanceSheetData(data) && hasRequiredProperties(data)) {
+    return <BalanceSheetsTable data={data as any} title={title} />;
+  }
+
+  // If this is cash flow statement data and has required properties, use the specialized component
+  if (isCashFlowStatementData(data) && hasRequiredProperties(data)) {
+    return <CashFlowStatementsTable data={data as any} title={title} />;
+  }
+
+  // If this is financial metrics data and has required properties, use the specialized component
+  if (isFinancialMetricsData(data) && hasRequiredProperties(data)) {
+    return <FinancialMetricsTable data={data as any} title={title} />;
+  }
 
   // Get ticker from first data item
   const ticker = data[0].ticker;
@@ -81,20 +185,19 @@ export function FinancialsTable({
       .join(' ');
   };
 
-  const headerTitle = title ? `${ticker} (${title} • ${formatPeriod(data[0].period)})` : `${ticker} (${formatPeriod(data[0].period)})`;
+  const headerTitle = title ? `${ticker} (${title} • ${formatPeriod(data[0].period!)})` : `${ticker} (${formatPeriod(data[0].period!)})`;
 
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="financials-table" className="border-none">
         <div className="border rounded-lg">
-        <AccordionTrigger className="w-full px-4 py-3 hover:no-underline hover:bg-muted rounded-t-lg">
+        <AccordionTrigger className="w-full px-4 py-2 hover:no-underline hover:bg-muted rounded-t-lg">
           <span className="flex flex-row items-center gap-2">
             <FontAwesomeIcon
                 icon={faCheckCircle}
                 size={'sm'}
                 color={Green}
               />
-              <span className="text-sm">Retrieved data:</span>{" "}
               <span className="text-muted-foreground text-sm">{headerTitle}</span>
           </span>
         </AccordionTrigger>
