@@ -26,7 +26,12 @@ export const models: Array<Model> = [
     apiIdentifier: 'gpt-4.1-2025-04-14',
     description: 'Flagship model for complex tasks',
   },
-  
+  {
+    id: 'gpt-4o',
+    label: 'GPT-4o',
+    apiIdentifier: 'gpt-4o',
+    description: 'Omni-purpose model for complex tasks',
+  },
 ] as const;
 
-export const DEFAULT_MODEL_NAME: string = 'gpt-4.1-2025-04-14';
+export const DEFAULT_MODEL_NAME: string = 'gpt-4o';
