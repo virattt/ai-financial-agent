@@ -31,7 +31,7 @@ import {
   FinancialToolsManager, 
   financialTools, 
   type AllowedTools 
-} from '@/lib/ai/financial-tools';
+} from '@/lib/ai/tools/financial-tools';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
