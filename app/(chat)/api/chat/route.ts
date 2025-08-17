@@ -175,6 +175,7 @@ export async function POST(request: Request) {
 
       const result = streamText({
         model: customModel(model.apiIdentifier, modelApiKey),
+        tools: financialToolsManager.getTools(),
         system: systemPrompt,
         messages: coreMessagesWithTaskNames,
         maxSteps: 10,
@@ -234,7 +235,6 @@ export async function POST(request: Request) {
             }
           }
         },
-        tools: financialToolsManager.getTools(),
       });
 
       result.mergeIntoDataStream(dataStream);
