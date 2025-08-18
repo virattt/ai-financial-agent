@@ -179,8 +179,6 @@ export async function POST(request: Request) {
         system: systemPrompt,
         messages: coreMessagesWithTaskNames,
         maxSteps: 10,
-        experimental_activeTools: allTools,
-        experimental_telemetry: AISDKExporter.getSettings(),
         onChunk: (event) => {
           const isToolCall = event.chunk.type === 'tool-call';
           if (!receivedFirstChunk && !isToolCall) {
