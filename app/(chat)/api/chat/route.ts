@@ -120,7 +120,7 @@ export async function POST(request: Request) {
             .string()
             .describe('The name of the sub-task'),
         }),
-        prompt: `You are a reasoning agent.  
+        prompt: `You are a financial reasoning agent.  
         Given the following user query: ${userMessage.content}, 
         break it down to small, tightly-scoped sub-tasks 
         that need to be taken to answer the query.  
