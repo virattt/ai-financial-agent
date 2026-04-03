@@ -2,13 +2,13 @@
 
 ## Overview
 
-[FinancialReports.eu](https://financialreports.eu) provides API access to **14M+ regulatory filings** from 35 official sources across 30+ countries. Its Markdown endpoint delivers LLM-ready text from annual reports — a natural fit for ai-financial-agent's LLM-powered equity research pipeline.
+[FinancialReports.eu](https://financialreports.eu) provides API access to **14M+ filings** from data sources across 30+ countries. Its Markdown endpoint delivers LLM-ready text from annual reports — a natural fit for ai-financial-agent's LLM-powered equity research pipeline.
 
 ## Why This Fits
 
 ai-financial-agent does LLM-powered equity research, currently focused on US markets. FinancialReports.eu extends this to:
 
-- **Global filing coverage** — 35 regulators including FCA (UK), Euronext (EU), EDINET (Japan), OPENDART (South Korea), SIX (Switzerland), and more
+- **Global filing coverage** — 30+ countries including UK, EU, Japan, South Korea, Switzerland, and more
 - **Markdown endpoint** — `GET /filings/{id}/markdown/` returns clean text from annual report PDFs, ready for LLM analysis
 - **33,000+ companies** with ISIN, LEI, and GICS classification
 - **11 standardized categories** — Financial Reporting, ESG, M&A, Debt/Equity, and more
@@ -18,7 +18,7 @@ ai-financial-agent does LLM-powered equity research, currently focused on US mar
 
 ### 1. Filing Research Tool
 
-Add as a tool the agent can call for regulatory filing data:
+Add as a tool the agent can call for filing data:
 
 ```python
 import requests
@@ -83,4 +83,4 @@ content = filings_markdown_retrieve.sync(client=client, id=filings.results[0].id
 | **Rate Limiting** | Burst limit + monthly quota |
 | **Companies** | 33,230+ |
 | **Total Filings** | 14,135,359+ |
-| **Sources** | 35 official regulators |
+| **Coverage** | 30+ countries |
