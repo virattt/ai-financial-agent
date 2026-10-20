@@ -161,7 +161,7 @@ test('explicit disable removes web tools and retains financial credentials', asy
 
 test('validates fetch URLs and opaque conversation IDs before execution', () => {
   const tools = enabledTools();
-  for (const url of ['file:///etc/passwd', 'javascript:alert(1)', 'https://user:secret@example.com']) {
+  for (const url of ['', 'not-a-url', 'file:///etc/passwd', 'javascript:alert(1)', 'https://user:secret@example.com']) {
     assert.equal(tools.web_fetch.parameters.safeParse({ urls: [url] }).success, false);
   }
   assert.equal(tools.web_fetch.parameters.safeParse({ urls: ['https://example.com/a?b=c'] }).success, true);

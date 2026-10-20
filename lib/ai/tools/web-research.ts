@@ -6,8 +6,12 @@ import { z } from 'zod';
 const endpoint = new URL('https://search.parallel.ai/mcp');
 const userAgent = 'ai-financial-agent/0.1.0 (+https://github.com/virattt/ai-financial-agent)';
 const httpUrl = z.string().url().refine((value) => {
-  const url = new URL(value);
-  return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password;
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password;
+  } catch {
+    return false;
+  }
 }, 'Use an HTTP or HTTPS URL without credentials');
 
 interface WebResearchConfig {
