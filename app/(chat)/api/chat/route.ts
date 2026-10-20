@@ -27,16 +27,10 @@ import {
 
 import { generateTitleFromUserMessage } from '../../actions';
 import { AISDKExporter } from 'langsmith/vercel';
-import { 
-  FinancialToolsManager, 
-  financialTools, 
-  type AllowedTools 
-} from '@/lib/ai/tools/financial-tools';
+import { createChatTools } from '@/lib/ai/tools/chat-tools';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
-
-const allTools: AllowedTools[] = [...financialTools];
 
 export async function POST(request: Request) {
   const {
@@ -59,6 +53,10 @@ export async function POST(request: Request) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  if (!z.string().uuid().safeParse(id).success) {
+    return new Response('Invalid chat ID', { status: 400 });
+  }
+
   const model = models.find((model) => model.id === modelId);
 
   if (!model) {
@@ -78,6 +76,10 @@ export async function POST(request: Request) {
 
   const chat = await getChatById({ id });
 
+  if (chat && chat.userId !== session.user.id) {
+    return new Response('Unauthorized', { status: 401 });
+  }
+
   if (!chat) {
     const title = await generateTitleFromUserMessage({ message: userMessage, modelApiKey });
     await saveChat({ id, userId: session.user.id, title });
@@ -93,10 +95,11 @@ export async function POST(request: Request) {
 
   return createDataStreamResponse({
     execute: async (dataStream) => {
-      // Initialize the financial tools manager
-      const financialToolsManager = new FinancialToolsManager({
+      const tools = createChatTools({
         financialDatasetsApiKey: financialDatasetsApiKey!,
         dataStream,
+        chatId: id,
+        abortSignal: request.signal,
       });
       dataStream.writeData({
         type: 'user-message-id',
@@ -112,6 +115,7 @@ export async function POST(request: Request) {
       });
 
       const { object } = await generateObject({
+        abortSignal: request.signal,
         model: customModel('gpt-4.1-nano-2025-04-14', modelApiKey),
         output: 'array',
         schema: z.object({
@@ -175,7 +179,8 @@ export async function POST(request: Request) {
 
       const result = streamText({
         model: customModel(model.apiIdentifier, modelApiKey),
-        tools: financialToolsManager.getTools(),
+        tools,
+        abortSignal: request.signal,
         system: systemPrompt,
         messages: coreMessagesWithTaskNames,
         maxSteps: 10,

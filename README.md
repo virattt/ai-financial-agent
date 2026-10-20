@@ -22,6 +22,7 @@ By using this software, you agree to use it solely for learning purposes.
 - [Setup](#setup)
 - [Run the Agent](#run-the-agent)
 - [Financial Data API](#financial-data-api)
+- [Web Research](#web-research)
 - [Deploy Your Own Agent](#deploy-your-own-agent)
 
 ## Features
@@ -96,6 +97,27 @@ Data includes financial statements, stock prices, options data, insider trades, 
 **Note**: Data is free for AAPL, GOOGL, MSFT, NVDA, and TSLA.
 
 If you do not want to use the Financial Datasets API, you can easily switch to another data provider by modifying a few lines of code.
+
+## Web Research
+
+The chat agent can search the web and read source-page excerpts with
+[Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp).
+Web research is enabled by default and needs no Parallel account or API key.
+Anonymous search uses Fast mode and is subject to free-tier usage limits.
+Your model API key and the existing Financial Datasets tools are still used as before.
+
+Ask for company context or recent developments, then ask the agent to read a source
+for more detail. The agent receives source URLs and excerpts and is instructed to
+cite URLs in its answer. Web content complements the structured financial tools;
+it does not replace stock prices or financial statements.
+
+To disable both web tools, set `WEB_SEARCH_ENABLED=false` in your deployment
+environment and restart the server. When enabled, research queries and requested
+page URLs are sent to Parallel with an opaque chat identifier that stays the same
+for follow-up turns. Starting a new chat starts a new identifier. Model and financial
+API keys are never sent to Parallel. A stopped chat cancels pending web requests;
+each web operation has a 15-second deadline. Service failures are returned to the
+agent without switching providers.
 
 ## Deploy Your Own Agent
 
